@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import http from '../utils/http'
+import { makesData } from '@/data/makesData'
 
 // src/stores/states.js
 
@@ -16,16 +16,11 @@ export const useMakesStore = defineStore('makes', {
       try {
         const lang = language || localStorage.getItem('language') || 'en'
         const nameField = lang === 'ar' ? 'name_ar' : 'name_en'
-        const response = await http.get('', {
-          params: {
-            route: 'makes/list',
-            lang: lang,
-          },
-        })
-        this.makes = (response.data || []).map((item) => ({
-          id: item.id,
-          logo: item.logo,
-          name: item[nameField] || item.name_en || item.name_ar,
+
+        this.makes = makesData.map((make) => ({
+          id: make.id,
+          logo: make.logo,
+          name: make[nameField] || make.name_en || make.name_ar,
         }))
       } catch (err) {
         this.error = err.message || 'Failed to fetch makes'

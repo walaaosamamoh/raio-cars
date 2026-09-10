@@ -5,7 +5,7 @@
   >
     <!-- title -->
     <h2 class="md:text-3xl text-2xl font-bold mb-10 text-gray-800 dark:text-white">
-      Browse by Make
+      {{ $t('home.makesTitle') }}
     </h2>
 
     <!-- Loading State -->
@@ -122,7 +122,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia'
+import { mapState } from 'pinia'
 import { useMakesStore } from '@/stores/makes'
 import { Grid, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
@@ -152,7 +152,7 @@ export default {
     isRTL() {
       return this.direction === 'rtl'
     },
-    
+
     // function to pad makes array with empty objects to fill the grid
     paddedMakes() {
       if (!this.makes || this.makes.length === 0) {

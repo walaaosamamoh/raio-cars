@@ -5,6 +5,7 @@
   "home": {
     "welcomeMessage": "Your dream drive starts here!",
     "subMessage": "Discover our wide range of cars to suit every budget and need. Connect directly with sellers",
+    "makesTitle": "Browse by make",
     "searchPlaceholder": "Search for cars by makes and models",
     "latestCars": "Latest Cars",
     "viewAll": "View All",
