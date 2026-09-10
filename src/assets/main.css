@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Tajawal", sans-serif;
+}
+
+.custom-input {
+  @apply block w-full py-2 border border-gray-300 placeholder-gray-400
+         focus:outline-none focus:ring-primary focus:border-primary
+         dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400
+         dark:focus:ring-primary-dark dark:focus:border-primary-dark;
+}
+
+:root[dir="rtl"] .custom-input::placeholder {
+  @apply text-right;
+}
+:root[dir="ltr"] .custom-input::placeholder {
+  @apply text-left;
+}
