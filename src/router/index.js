@@ -1,19 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Cookies from 'js-cookie'
-import HomeView from '../views/HomeView.vue'
-import CarsView from '../views/CarsView.vue'
-import CarDetails from '../views/CarDetails.vue'
-import SignIn from '../views/SignIn.vue'
-import VerifyOtp from '../views/VerifyOtp.vue'
-import CompleteProfile from '../views/CompleteProfile.vue'
-import Dashboard from '../views/seller/Dashboard.vue'
-import Ads from '../views/seller/Ads.vue'
-import Plans from '../views/seller/Plans.vue'
-import AccountVerification from '../views/seller/AccountVerification.vue'
-import CreateAd from '../views/seller/CreateAd.vue'
-import EditAd from '../views/seller/EditAd.vue'
-import EditProfile from '../views/seller/EditProfile.vue'
-import SellerProfile from '../views/SellerProfile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,91 +7,91 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: () => import('../views/HomeView.vue'),
       meta: {layout: 'default'}
     },
     {
       path: '/cars',
       name: 'cars',
-      component: CarsView,
+      component: () => import('../views/CarsView.vue'),
       meta: {layout: 'default'}
     },
     {
       path: '/cars/:id',
       name: 'carDetails',
-      component: CarDetails,
+      component: () => import('../views/CarDetails.vue'),
       meta: {layout: 'default'}
     },
     {
       path: '/seller/:id',
       name: 'sellerProfile',
-      component: SellerProfile,
+      component: () => import('../views/SellerProfile.vue'),
       meta: {layout: 'default'}
     },
     {
       path: '/seller/cars/:id',
       name: 'sellerCarDetails',
-      component: CarDetails,
+      component: () => import('../views/CarDetails.vue'),
       meta: {layout: 'seller'}
     },
     {
       path: '/signin',
       name: 'signIn',
-      component: SignIn,
+      component: () => import('../views/SignIn.vue'),
       meta: {layout: 'auth'}
     },
     {
       path: '/verifyOtp',
       name: 'verifyOtp',
-      component: VerifyOtp,
+      component: () => import('../views/VerifyOtp.vue'),
       meta: {layout: 'auth'}
     },
     {
       path: '/complete-profile',
       name: 'completeProfile',
-      component: CompleteProfile,
+      component: () => import('../views/CompleteProfile.vue'),
       meta: {layout: 'auth'}
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: Dashboard,
+      component: () => import('../views/seller/Dashboard.vue'),
       meta: {layout: 'seller', requiresAuth: true}
     },
     {
       path: '/my-ads',
       name: 'ads',
-      component: Ads,
+      component: () => import('../views/seller/Ads.vue'),
       meta: {layout: 'seller', requiresAuth: true}
     },
     {
       path: '/plans',
       name: 'plans',
-      component: Plans,
+      component: () => import('../views/seller/Plans.vue'),
       meta: {layout: 'seller', requiresAuth: true}
     },
     {
       path: '/account-verification',
       name: 'accountVerification',
-      component: AccountVerification,
+      component: () => import('../views/seller/AccountVerification.vue'),
       meta: {layout: 'seller', requiresAuth: true}
     },
     {
       path: '/create-ad',
       name: 'create-ad',
-      component: CreateAd,
+      component: () => import('../views/seller/CreateAd.vue'),
       meta: {layout: 'seller', requiresAuth: true}
     },
     {
       path: '/edit-ad/:id',
       name: 'edit-ad',
-      component: EditAd,
+      component: () => import('../views/seller/EditAd.vue'),
       meta: {layout: 'seller', requiresAuth: true}
     },
     {
       path: '/profile',
       name: 'profile',
-      component: EditProfile,
+      component: () => import('../views/seller/EditProfile.vue'),
       meta: {layout: 'seller', requiresAuth: true}
     }
   ],
