@@ -1,6 +1,6 @@
 // src/stores/carData.js
 import { defineStore } from 'pinia'
-import http from '../utils/http'
+import { carData } from '@/data/carData'
 
 export const useCarDataStore = defineStore('carData', {
   state: () => ({
@@ -14,66 +14,57 @@ export const useCarDataStore = defineStore('carData', {
     odometers: [],
     options: [],
     loading: false,
-    error: null
+    error: null,
   }),
 
   actions: {
     async fetchCarData() {
       this.loading = true
       this.error = null
+
       try {
         const lang = localStorage.getItem('language') || 'en'
         const nameField = lang === 'ar' ? 'name_ar' : 'name_en'
 
-        const [fuelRes, transRes, driveRes, cylRes, colorRes, odoRes, optRes] = await Promise.all([
-          http.get('', { params: { route: 'fuel_types/list', lang } }),
-          http.get('', { params: { route: 'transmission/list', lang } }),
-          http.get('', { params: { route: 'drivetrains/list', lang } }),
-          http.get('', { params: { route: 'cylinders/list', lang } }),
-          http.get('', { params: { route: 'colors/list', lang } }),
-          http.get('', { params: { route: 'odometer/list', lang } }),
-          http.get('', { params: { route: 'options/list', lang } }),
-        ])
-
-        // extract names based on language
-        this.fuelTypes = (fuelRes.data || []).map(item => ({
+        this.fuelTypes = carData.fuelTypes.map(item => ({
           id: item.id,
-          name: item[nameField] || item.name_en || item.name_ar
+          name: item[nameField] || item.name_en || item.name_ar,
         }))
 
-        this.transmissions = (transRes.data || []).map(item => ({
+        this.transmissions = carData.transmissions.map(item => ({
           id: item.id,
-          name: item[nameField] || item.name_en || item.name_ar
+          name: item[nameField] || item.name_en || item.name_ar,
         }))
 
-        this.drivetrains = (driveRes.data || []).map(item => ({
+        this.drivetrains = carData.drivetrains.map(item => ({
           id: item.id,
-          name: item[nameField] || item.name_en || item.name_ar
+          name: item[nameField] || item.name_en || item.name_ar,
         }))
 
-        this.cylinders =  (cylRes.data || []).map(item => ({
+        this.cylinders = carData.cylinders.map(item => ({
           id: item.id,
-          name: item.count
+          name: item.count,
         }))
 
-        this.colors = (colorRes.data || []).map(item => ({
+        this.colors = carData.colors.map(item => ({
           id: item.id,
-          name: item[nameField] || item.name_en || item.name_ar
+          name: item[nameField] || item.name_en || item.name_ar,
         }))
 
-        this.odometers = (odoRes.data || []).map(item => ({
+        this.odometers = carData.odometers.map(item => ({
           id: item.id,
-          name: item.kilometers
+          name: item.kilometers,
         }))
 
-        this.options = (optRes.data || []).map(item => ({
+        this.options = carData.options.map(item => ({
           id: item.id,
-          name: item[nameField] || item.name_en || item.name_ar
+          name: item[nameField] || item.name_en || item.name_ar,
         }))
 
+        this.models = []
       } catch (error) {
-        console.error('Error:', error)
-        this.error = error.message || 'Failed to fetch car data'
+        console.error('Error loading local car data:', error)
+        this.error = error.message || 'Failed to load car data'
       } finally {
         this.loading = false
       }
@@ -81,26 +72,25 @@ export const useCarDataStore = defineStore('carData', {
 
     async fetchModels(makeId) {
       this.models = []
+
       if (!makeId) return
 
       try {
         const lang = localStorage.getItem('language') || 'en'
         const nameField = lang === 'ar' ? 'name_ar' : 'name_en'
 
-        const response = await http.get('', {
-          params: { route: 'models/list', make: makeId, lang }
-        })
+        this.models = carData.models
+          .filter(item => String(item.make_id) === String(makeId))
+          .map(item => ({
+            id: item.id,
+            name: item[nameField] || item.name_en || item.name_ar,
+          }))
 
-        this.models = (response.data || []).map(item => ({
-          id: item.id,
-          name: item[nameField] || item.name_en || item.name_ar
-        }))
-        console.log(this.models)
-
+        console.log('Local models:', this.models)
       } catch (error) {
-        console.error('Error:', error)
-        this.error = error.message || 'Failed to fetch models'
+        console.error('Error loading models:', error)
+        this.error = error.message || 'Failed to load models'
       }
     },
-  }
+  },
 })

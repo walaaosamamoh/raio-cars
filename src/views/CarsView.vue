@@ -180,6 +180,7 @@ export default {
       } catch (e) {
         // fallback to simple assignment if stringify fails for some reason
         this.filters = newFilters
+        console.log(e);
       }
     },
 
@@ -198,6 +199,16 @@ export default {
           min_price: this.filters.priceFrom || '',
           max_price: this.filters.priceTo || '',
           sort_order: this.sortByToSortOrder(),
+          transmission: this.filters.transmission.join(',') || '',
+          drive_line: this.filters.driveLine.join(',') || '',
+          fuel: this.filters.fuel.join(',') || '',
+          cylinders: this.filters.cylinders.join(',') || '',
+          exterior: this.filters.exterior.join(',') || '',
+          interior: this.filters.interior.join(',') || '',
+          state: this.filters.state.join(',') || '',
+          city: this.filters.city.join(',') || '',
+          year_from: this.filters.yearFrom || '',
+          year_to: this.filters.yearTo || '',
         })
       })
     },

@@ -16,7 +16,6 @@ export const useAdsStore = defineStore('ads', {
   actions: {
     // Fetch ads from local mock data
     async fetchAds({
-      lang = localStorage.getItem('language') || 'en',
       make = '',
       model = '',
       name = '',
@@ -25,6 +24,16 @@ export const useAdsStore = defineStore('ads', {
       phone = '',
       sort_order = '',
       advertiserId = '',
+      transmission = '',
+      drive_line = '',
+      fuel = '',
+      cylinders = '',
+      exterior = '',
+      interior = '',
+      state = '',
+      city = '',
+      year_from = '',
+      year_to = '',
     } = {}) {
       this.loading = true
       this.error = null
@@ -34,64 +43,102 @@ export const useAdsStore = defineStore('ads', {
 
         // Filter by make
         if (make) {
-          filteredAds = filteredAds.filter(
-            (ad) => ad.make?.toLowerCase() === make.toLowerCase()
-          )
+          filteredAds = filteredAds.filter((ad) => ad.make_id === make)
         }
 
         // Filter by model
         if (model) {
-          filteredAds = filteredAds.filter(
-            (ad) => ad.model?.toLowerCase() === model.toLowerCase()
-          )
+          filteredAds = filteredAds.filter((ad) => ad.model_id === model)
         }
 
         // Search by name
         if (name) {
           filteredAds = filteredAds.filter((ad) =>
-            ad.name?.toLowerCase().includes(name.toLowerCase())
+            ad.name?.toLowerCase().includes(name.toLowerCase()),
           )
         }
 
         // Minimum price
         if (min_price !== '') {
-          filteredAds = filteredAds.filter(
-            (ad) => Number(ad.price) >= Number(min_price)
-          )
+          filteredAds = filteredAds.filter((ad) => Number(ad.price) >= Number(min_price))
         }
 
         // Maximum price
         if (max_price !== '') {
-          filteredAds = filteredAds.filter(
-            (ad) => Number(ad.price) <= Number(max_price)
-          )
+          filteredAds = filteredAds.filter((ad) => Number(ad.price) <= Number(max_price))
         }
 
         // Filter by phone
         if (phone) {
-          filteredAds = filteredAds.filter((ad) =>
-            ad.phone?.includes(phone)
-          )
+          filteredAds = filteredAds.filter((ad) => ad.phone?.includes(phone))
         }
 
         // Filter by advertiser
         if (advertiserId) {
           filteredAds = filteredAds.filter(
-            (ad) => String(ad.advertiser_id) === String(advertiserId)
+            (ad) => String(ad.advertiser_id) === String(advertiserId),
           )
+        }
+
+        // Filter by transmission
+        if (transmission) {
+          filteredAds = filteredAds.filter((ad) => ad.transmission?.includes(transmission))
+        }
+
+        // Filter by drive line
+        if (drive_line) {
+          filteredAds = filteredAds.filter((ad) => ad.drive_line?.includes(drive_line))
+        }
+
+        // Filter by fuel
+        if (fuel) {
+          filteredAds = filteredAds.filter((ad) => ad.fuel_type.includes(fuel))
+        }
+
+        // Filter by cylinders
+        if (cylinders) {
+          filteredAds = filteredAds.filter((ad) => Number(ad.cylinders) === Number(cylinders))
+        }
+
+        // Filter by exterior
+        if (exterior) {
+          filteredAds = filteredAds.filter((ad) => ad.exterior_color?.includes(exterior))
+        }
+
+        // Filter by interior
+        if (interior) {
+          filteredAds = filteredAds.filter((ad) => ad.interior_color?.includes(interior))
+        }
+
+        // Filter by state
+        if (state) {
+          filteredAds = filteredAds.filter((ad) => ad.state?.includes(state))
+        }
+
+        // Filter by city
+        if (city) {
+          filteredAds = filteredAds.filter((ad) => ad.city?.includes(city))
+        }
+
+        // Filter by year from
+        if (year_from !== '') {
+          filteredAds = filteredAds.filter((ad) => Number(ad.year) >= Number(year_from))
+        }
+
+        // Filter by year to
+        if (year_to !== '') {
+          filteredAds = filteredAds.filter((ad) => Number(ad.year) <= Number(year_to))
         }
 
         // Sort by date
         if (sort_order === 'asc') {
-          filteredAds.sort(
-            (a, b) =>
-              new Date(a.created_at) - new Date(b.created_at)
-          )
+          filteredAds.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
         } else if (sort_order === 'desc') {
-          filteredAds.sort(
-            (a, b) =>
-              new Date(b.created_at) - new Date(a.created_at)
-          )
+          filteredAds.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        } else if (sort_order === 'price_asc') {
+          filteredAds.sort((a, b) => Number(a.price) - Number(b.price))
+        } else if (sort_order === 'price_desc') {
+          filteredAds.sort((a, b) => Number(b.price) - Number(a.price))
         }
 
         this.ads = filteredAds
@@ -103,9 +150,7 @@ export const useAdsStore = defineStore('ads', {
       } catch (error) {
         console.error(error)
 
-        this.error =
-          error?.message ||
-          'An error occurred while fetching ads.'
+        this.error = error?.message || 'An error occurred while fetching ads.'
 
         this.ads = []
         this.totalAds = 0
@@ -117,18 +162,13 @@ export const useAdsStore = defineStore('ads', {
     },
 
     // Fetch a single ad from local mock data
-    async fetchAdById(
-      id,
-      lang = localStorage.getItem('language') || 'en'
-    ) {
+    async fetchAdById(id) {
       this.loading = true
       this.error = null
       this.currentAd = null
 
       try {
-        const ad = adsData.find(
-          (item) => String(item.id) === String(id)
-        )
+        const ad = adsData.find((item) => String(item.id) === String(id))
 
         if (!ad) {
           throw new Error('Car not found.')
@@ -142,9 +182,7 @@ export const useAdsStore = defineStore('ads', {
       } catch (error) {
         console.error('Error fetching car details:', error)
 
-        this.error =
-          error?.message ||
-          'An error occurred while fetching car details.'
+        this.error = error?.message || 'An error occurred while fetching car details.'
 
         this.currentAd = null
 
@@ -155,26 +193,18 @@ export const useAdsStore = defineStore('ads', {
     },
 
     // Increment views locally
-    async incrementAdView(
-      adId,
-      lang = localStorage.getItem('language') || 'en'
-    ) {
+    async incrementAdView(adId) {
       this.error = null
       this.message = ''
 
       try {
-        const ad = adsData.find(
-          (item) => String(item.id) === String(adId)
-        )
+        const ad = adsData.find((item) => String(item.id) === String(adId))
 
         if (ad) {
           ad.views = (ad.views || 0) + 1
 
           // Keep currentAd in sync
-          if (
-            this.currentAd &&
-            String(this.currentAd.id) === String(adId)
-          ) {
+          if (this.currentAd && String(this.currentAd.id) === String(adId)) {
             this.currentAd.views = ad.views
           }
         }
@@ -185,19 +215,14 @@ export const useAdsStore = defineStore('ads', {
       } catch (error) {
         console.error('Error adding view:', error)
 
-        this.error =
-          error?.message ||
-          'An error occurred while adding view.'
+        this.error = error?.message || 'An error occurred while adding view.'
 
         return false
       }
     },
 
     // Create ad - will be replaced with local logic later
-    async createAd(
-      formData,
-      lang = localStorage.getItem('language') || 'en'
-    ) {
+    async createAd(formData, lang = localStorage.getItem('language') || 'en') {
       this.loading = true
       this.error = null
       this.message = ''
@@ -214,17 +239,11 @@ export const useAdsStore = defineStore('ads', {
         this.message = response.data.message
         this.adsId = response.data.ads_id
 
-        console.log(
-          'Ad created successfully:',
-          response.data
-        )
+        console.log('Ad created successfully:', response.data)
 
         return response.data.success
       } catch (error) {
-        console.error(
-          'Error creating ad in store:',
-          error.response || error
-        )
+        console.error('Error creating ad in store:', error.response || error)
 
         this.error =
           error?.response?.data?.error ||
@@ -239,10 +258,7 @@ export const useAdsStore = defineStore('ads', {
     },
 
     // Update ad - will be replaced with local logic later
-    async updateAd(
-      formData,
-      lang = localStorage.getItem('language') || 'en'
-    ) {
+    async updateAd(formData, lang = localStorage.getItem('language') || 'en') {
       this.loading = true
       this.error = null
       this.message = ''
@@ -258,17 +274,11 @@ export const useAdsStore = defineStore('ads', {
 
         this.message = response.data.message
 
-        console.log(
-          'Ad updated successfully:',
-          response.data
-        )
+        console.log('Ad updated successfully:', response.data)
 
         return response.data.success
       } catch (error) {
-        console.error(
-          'Error updating ad in store:',
-          error.response || error
-        )
+        console.error('Error updating ad in store:', error.response || error)
 
         this.error =
           error?.response?.data?.error ||
@@ -283,10 +293,7 @@ export const useAdsStore = defineStore('ads', {
     },
 
     // Fetch photos - will be replaced with local logic later
-    async getPhotos(
-      adId,
-      lang = localStorage.getItem('language') || 'en'
-    ) {
+    async getPhotos(adId, lang = localStorage.getItem('language') || 'en') {
       this.loading = true
       this.error = null
 
@@ -301,8 +308,7 @@ export const useAdsStore = defineStore('ads', {
 
         console.log('Photos fetched:', response.data)
 
-        const responseData =
-          response.data.data.photos
+        const responseData = response.data.data.photos
 
         return responseData || []
       } catch (error) {
@@ -320,10 +326,7 @@ export const useAdsStore = defineStore('ads', {
     },
 
     // Insert photos - will be replaced with local logic later
-    async insertPhotos(
-      formData,
-      lang = localStorage.getItem('language') || 'en'
-    ) {
+    async insertPhotos(formData, lang = localStorage.getItem('language') || 'en') {
       this.loading = true
       this.error = null
       this.message = ''
@@ -357,10 +360,7 @@ export const useAdsStore = defineStore('ads', {
     },
 
     // Delete photo - will be replaced with local logic later
-    async deletePhoto(
-      formData,
-      lang = localStorage.getItem('language') || 'en'
-    ) {
+    async deletePhoto(formData, lang = localStorage.getItem('language') || 'en') {
       this.loading = true
       this.error = null
       this.message = ''
@@ -376,17 +376,11 @@ export const useAdsStore = defineStore('ads', {
 
         this.message = response.data.message
 
-        console.log(
-          'Photo deleted successfully:',
-          response.data
-        )
+        console.log('Photo deleted successfully:', response.data)
 
         return response.data.success || false
       } catch (error) {
-        console.error(
-          'Error deleting photo in store:',
-          error.response || error
-        )
+        console.error('Error deleting photo in store:', error.response || error)
 
         this.error =
           error?.response?.data?.error ||
