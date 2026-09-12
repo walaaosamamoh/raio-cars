@@ -25,7 +25,7 @@
     <div v-else-if="adsStore.error" class="text-center py-10">
       <p class="text-red-500 mb-4">{{ adsStore.error }}</p>
     </div>
-    
+
     <!-- Cars Grid / Scroller -->
     <div v-else>
       <div
@@ -34,7 +34,7 @@
         <!-- Car Card -->
         <router-link
           :to="{ name: 'carDetails', params: { id: ad.id } }"
-          v-for="ad in adsStore.ads.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0,8)"
+          v-for="ad in adsStore.ads.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,8)"
           :key="ad.id"
           class="min-w-[250px] sm:min-w-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
         >

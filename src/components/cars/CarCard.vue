@@ -84,8 +84,9 @@ export default {
      */
     getPhoto() {
       if (this.ad && this.ad.photos && this.ad.photos.length > 0) {
-        return JSON.parse(this.ad.photos)[0];
+        return this.ad.photos[0];
       }
+      return 'https://via.placeholder.com/400x300?text=No+Image';
     },
     /**
      * Formats the car price with commas for better readability.
