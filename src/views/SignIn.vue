@@ -22,11 +22,11 @@
             class="block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-1"
             >{{ $t('sign_in.phone_label') }}</label
           >
-          <div class="flex rounded-md shadow-sm">           
+          <div class="flex rounded-md shadow-sm">
             <!-- Custom Dropdown for Country Code -->
             <div class="relative" ref="countryDropdown">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 @click.stop="toggleDropdown"
                 class="relative z-10 h-full inline-flex items-center px-3 py-2 border border-e-0 border-gray-300 bg-gray-50 rounded-s-md text-sm text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
               >
@@ -37,13 +37,13 @@
               </button>
 
               <!-- Dropdown Panel -->
-              <div 
+              <div
                 v-if="isDropdownOpen"
                 class="absolute z-20 mt-1 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
               >
                 <ul class="max-h-60 overflow-auto py-1">
-                  <li 
-                    v-for="country in countries" 
+                  <li
+                    v-for="country in countries"
                     :key="country.code"
                     @click="selectCountry(country)"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
@@ -54,7 +54,7 @@
                 </ul>
               </div>
             </div>
- 
+
             <!-- Phone Number Field with WhatsApp Icon -->
             <div class="relative flex-grow">
               <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -124,14 +124,14 @@
 <script>
 import { signInSchema } from '@/schemas/validationSchemas'
 import { useAuthStore } from '@/stores/auth'
- 
+
 const countries = [
   { name: 'Sudan', code: 'SD', dial_code: '249', flag: '🇸🇩' },
   { name: 'Saudi Arabia', code: 'SA', dial_code: '966', flag: '🇸🇦' },
   { name: 'Egypt', code: 'EG', dial_code: '20', flag: '🇪🇬' },
   { name: 'United Arab Emirates', code: 'AE', dial_code: '971', flag: '🇦🇪' },
 ];
- 
+
 export default {
   name: 'SignInView',
   data() {
@@ -167,34 +167,34 @@ export default {
     toggleDropdown() {
       this.isDropdownOpen = !this.isDropdownOpen;
     },
-     
+
      focusPhoneInput() {
        this.$nextTick(() => {
          const phoneInput = document.getElementById('phone');
          if (phoneInput) phoneInput.focus();
        });
      },
-     
+
      async handleSendOtp(values) {
        if (this.loading) return;
-       
+
        this.loading = true;
        const fullPhoneNumber = this.selectedCountry.dial_code + values.phone;
-       
+
        try {
          const success = await this.auth.sendOtp(fullPhoneNumber);
-         
+
          if (success) {
            this.$toast.success(this.auth.message);
            this.$router.push({ name: 'verifyOtp', params: { phone: fullPhoneNumber } });
          }
-       } catch (error) {
+       } catch {
          this.$toast.error('Network error occurred');
        } finally {
          this.loading = false;
        }
      },
-     
+
      selectCountry(country) {
        this.selectedCountry = country;
        this.isDropdownOpen = false;

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import http from '../utils/http'
 import Cookies from 'js-cookie'
+import { advertiserData } from '@/data/advertiserData'
 
 export const useAuthStore = defineStore('authStore', {
   state: () => ({
@@ -14,195 +14,248 @@ export const useAuthStore = defineStore('authStore', {
     error: null,
     message: '',
   }),
+
   getters: {
     isAuthenticated: (state) => !!state.token,
   },
+
   actions: {
-    async sendOtp(phone, lang = localStorage.getItem('language') || 'en') {
+    // Send OTP locally
+    async sendOtp(phone) {
       this.loading = true
       this.error = null
       this.message = ''
-      try {
-        const formData = new FormData()
-        formData.append('lang', lang)
-        formData.append('phone', phone)
 
-        const response = await http.post('', formData, {
-          params: {
-            route: 'login/createOTP',
-          },
-        })
+      try {
         this.phone = phone
-        this.message = response.data.message || 'OTP sent successfully.'
-        return response.data.success || false
+
+        this.message = 'OTP sent successfully. Use 1234 for demo login.'
+
+        console.log('Demo OTP: 1234')
+
+        return true
       } catch (error) {
-        console.log(error)
-        this.error =
-          error?.response?.data?.error || error.message || 'An error occurred while sending OTP.'
+        console.error(error)
+
+        this.error = error?.message || 'An error occurred while sending OTP.'
+
         return false
       } finally {
         this.loading = false
       }
     },
 
-    async verifyOtp(otp, lang = localStorage.getItem('language') || 'en') {
+    // Verify OTP locally
+    async verifyOtp(otp) {
       this.loading = true
       this.error = null
       this.message = ''
+
       try {
-        const response = await http.get('', {
-          params: {
-            route: 'login/getOTP',
-            code: otp,
-            lang: lang,
-          },
-        })
-        if (response.data.success === false) {
-          this.error = response.data.message || 'Invalid OTP.'
+        // Demo OTP
+        if (String(otp) !== '1234') {
+          this.error = 'Invalid OTP. Please use 1234.'
           return false
         }
+
         this.otp = otp
-        this.token = response.data[0].token
-        this.advertiserName = response.data[0].name
-        this.advertiserId = response.data[0].id
-        console.log('Advertiser Name:', this.advertiserName)
-        console.log('advId:', this.advertiserId)
+
+        // Find advertiser using the phone number
+        let advertiser = advertiserData.find(
+          (item) => item.phone === this.phone,
+        )
+
+        // If no advertiser exists with this phone,
+        // use the first demo advertiser for testing
+        if (!advertiser) {
+          advertiser = advertiserData[0]
+        }
+
+        this.token = `demo-token-${advertiser.id}`
+        this.advertiserId = advertiser.id
+        this.advertiserName = advertiser.name
+        this.advertiser = advertiser
 
         Cookies.set('auth-token', this.token, {
-          expires: 7, // Expires in 7 days
-          secure: import.meta.env.MODE === 'production', // Use secure cookies in production
-        })
-        // Also store advertiser ID in cookies
-        Cookies.set('advertiser-id', this.advertiserId, {
           expires: 7,
           secure: import.meta.env.MODE === 'production',
         })
-        this.message = response.data.message || 'OTP verified successfully.'
+
+        Cookies.set('advertiser-id', String(this.advertiserId), {
+          expires: 7,
+          secure: import.meta.env.MODE === 'production',
+        })
+
+        this.message = 'OTP verified successfully.'
+
+        console.log('Logged in advertiser:', advertiser)
+
         return true
       } catch (error) {
-        console.log(error)
+        console.error(error)
+
         this.error =
-          error?.response?.data?.message ||
-          error.message ||
-          'An error occurred while verifying OTP.'
+          error?.message || 'An error occurred while verifying OTP.'
+
         return false
       } finally {
         this.loading = false
       }
     },
 
-    async createAdvertiser(phone, name, photo, lang = localStorage.getItem('language') || 'en') {
+    // Create advertiser locally
+    async createAdvertiser(phone, name, photo) {
       this.loading = true
       this.error = null
       this.message = ''
-      try {
-        const formData = new FormData()
-        formData.append('phone', phone)
-        formData.append('name', name)
-        formData.append('photo', photo)
-        formData.append('lang', lang)
 
-        const response = await http.post('', formData, {
-          params: {
-            route: 'advertisers/create',
-          },
-        })
-        this.advertiserName = name
-        this.message = response.data.message || 'Advertiser created successfully.'
+      try {
+        // Check if advertiser already exists
+        const existingAdvertiser = advertiserData.find(
+          (item) => item.phone === phone,
+        )
+
+        if (existingAdvertiser) {
+          this.error = 'An advertiser with this phone number already exists.'
+          return false
+        }
+
+        const newAdvertiser = {
+          id: advertiserData.length + 1,
+          name,
+          phone,
+          whatsapp: phone,
+          photo: photo || '/images/users/default-avatar.webp',
+          about: '',
+          state: '',
+          city: '',
+          ads_count: 0,
+          followers: 0,
+          created_at: new Date().toISOString().split('T')[0],
+        }
+
+        advertiserData.push(newAdvertiser)
+
+        this.advertiser = newAdvertiser
+        this.advertiserName = newAdvertiser.name
+        this.advertiserId = newAdvertiser.id
+
+        this.message = 'Advertiser created successfully.'
+
+        console.log('Advertiser created locally:', newAdvertiser)
+
         return true
       } catch (error) {
-        console.log(error)
+        console.error(error)
+
         this.error =
-          error?.response?.data?.error ||
-          error.message ||
+          error?.message ||
           'An error occurred while creating advertiser.'
+
         return false
       } finally {
         this.loading = false
       }
     },
 
-    async getAdvertiser(id, lang = localStorage.getItem('language') || 'en') {
+    // Get logged-in advertiser
+    async getAdvertiser(id) {
       this.loading = true
       this.error = null
       this.message = ''
+
       try {
-        const response = await http.get('', {
-          params: {
-            route: 'advertisers/get',
-            id: id,
-            lang: lang,
-          },
-        })
-        this.advertiser = response.data[0] || []
-        this.advertiserName = this.advertiser.name || ''
-        console.log(this.advertiser)
+        const advertiser = advertiserData.find(
+          (item) => String(item.id) === String(id),
+        )
+
+        if (!advertiser) {
+          throw new Error('Advertiser not found.')
+        }
+
+        this.advertiser = advertiser
+        this.advertiserName = advertiser.name
+
         return true
       } catch (error) {
+        console.error(error)
+
         this.error =
-          error?.response?.data?.message ||
-          error.message ||
-          'An error occurred while fetching advertisers.'
+          error?.message ||
+          'An error occurred while fetching advertiser.'
+
         return false
       } finally {
         this.loading = false
       }
     },
 
-    // Fetch advertiser data for viewing purposes without modifying the store state
-    // Used in SellerProfile view
-    // To prevent overwriting logged-in advertiser data
-    async getAdvertiserForView(id, lang = localStorage.getItem('language') || 'en') {
+    // Get advertiser for SellerProfileView
+    // Does not modify logged-in advertiser state
+    async getAdvertiserForView(id) {
       try {
-        const response = await http.get('', {
-          params: {
-            route: 'advertisers/get',
-            id: id,
-            lang: lang,
-          },
-        })
-        return response.data[0] || []
+        const advertiser = advertiserData.find(
+          (item) => String(item.id) === String(id),
+        )
+
+        if (!advertiser) {
+          throw new Error('Advertiser not found.')
+        }
+
+        return advertiser
       } catch (error) {
-        console.log('Error fetching advertiser for view:', error)
+        console.error(
+          'Error fetching advertiser for view:',
+          error,
+        )
+
         throw error
       }
     },
 
-    async incrementAdvertiserProfileView(
-      advertiserId,
-      lang = localStorage.getItem('language') || 'en',
-    ) {
-      this.loading = true
+    // Increment advertiser profile views locally
+    async incrementAdvertiserProfileView(advertiserId) {
       this.error = null
       this.message = ''
 
       try {
-        const formData = new FormData()
-        formData.append('id', advertiserId)
-        formData.append('lang', lang)
+        const advertiser = advertiserData.find(
+          (item) => String(item.id) === String(advertiserId),
+        )
 
-        const response = await http.post('', formData, {
-          params: {
-            route: 'advertisers/addView',
-          },
-        })
-        this.message = response.data.message
-        console.log(this.message)
+        if (advertiser) {
+          advertiser.profile_views =
+            (advertiser.profile_views || 0) + 1
+        }
+
+        this.message = 'Profile view counted successfully.'
+
         return true
       } catch (error) {
+        console.error(
+          'Error adding advertiser profile view:',
+          error,
+        )
+
         this.error =
-          error?.response?.data?.error || error.message || 'An error occurred while adding view'
+          error?.message ||
+          'An error occurred while adding profile view.'
+
         return false
-      } finally {
-        this.loading = false
       }
     },
 
     logout() {
       this.advertiser = {}
+      this.advertiserName = ''
+      this.advertiserId = ''
+      this.phone = ''
+      this.otp = ''
       this.token = null
+
       Cookies.remove('auth-token')
       Cookies.remove('advertiser-id')
+
       console.log('Logged out successfully.')
     },
   },
