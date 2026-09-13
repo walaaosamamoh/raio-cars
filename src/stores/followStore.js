@@ -1,88 +1,119 @@
 import { defineStore } from 'pinia'
-import http from '../utils/http'
 
 export const useFollowStore = defineStore('followStore', {
-  state: ()=>({
+  state: () => ({
     isFollowing: false,
     loading: false,
-    error: null
+    error: null,
   }),
 
   actions: {
-    async checkFollowStatus(advertiserId, followerId, lang = localStorage.getItem('language') || 'en'){
+    getFollows() {
+      return JSON.parse(localStorage.getItem('follows') || '[]')
+    },
+
+    saveFollows(follows) {
+      localStorage.setItem('follows', JSON.stringify(follows))
+    },
+
+    async checkFollowStatus(advertiserId, followerId) {
       this.loading = true
       this.error = null
-      try{
-        const response = await http.get('',{
-            params:{
-              route: 'follow/get',
-              advertiser: advertiserId,
-              follower: followerId,
-              lang: lang
-            }
-        })
-        this.isFollowing= response.data.data.num == 1
-        console.log(this.isFollowing)
-        return response.data.success
-      }catch(error){
-        console.log(error)
-        this.error= error.response.error.message || error.message
-        this.isFollowing= false
+
+      try {
+        if (!advertiserId || !followerId) {
+          this.isFollowing = false
+          return false
+        }
+
+        const follows = this.getFollows()
+
+        this.isFollowing = follows.some(
+          (follow) =>
+            String(follow.advertiserId) === String(advertiserId) &&
+            String(follow.followerId) === String(followerId),
+        )
+
+        return this.isFollowing
+      } catch (error) {
+        console.error(error)
+        this.error = error?.message || 'An error occurred while checking follow status.'
+        this.isFollowing = false
         return false
-      }finally{
-        this.loading= false
+      } finally {
+        this.loading = false
       }
     },
 
-    async followAdvertiser(advertiserId, followerId, lang = localStorage.getItem('language') || 'en'){
+    async followAdvertiser(advertiserId, followerId) {
       this.loading = true
       this.error = null
-      const formData = new FormData()
-      formData.append('advertiser', advertiserId)
-      formData.append('follower', followerId)
-      formData.append('lang', lang)
-      try{
-        const response = await http.post('', formData,{
-            params:{
-              route: 'follow/create',
-            }
-        })
-        this.isFollowing= true
-        console.log('followed')
-        return response.data.success
-      }catch(error){
-        console.log(error)
-        this.error= error?.response?.error.message || error.message || 'An error occurred while following.'
-        this.isFollowing= false
-        return false
-      }finally{
-        this.loading= false
-      }
-    },
 
-    async unfollowAdvertiser(advertiserId, followerId, lang = localStorage.getItem('language') || 'en'){
-      this.loading = true
-      this.error = null
-      const formData = new FormData()
-      formData.append('advertiser', advertiserId)
-      formData.append('follower', followerId)
-      formData.append('lang', lang)
-      try{
-          await http.post('', formData,{
-            params:{
-              route: 'follow/delete',
-            }
+      try {
+        if (!advertiserId || !followerId) {
+          return false
+        }
+
+        const follows = this.getFollows()
+
+        const alreadyFollowing = follows.some(
+          (follow) =>
+            String(follow.advertiserId) === String(advertiserId) &&
+            String(follow.followerId) === String(followerId),
+        )
+
+        if (!alreadyFollowing) {
+          follows.push({
+            advertiserId,
+            followerId,
           })
-        this.isFollowing= false
-        console.log('unfollowed')
+
+          this.saveFollows(follows)
+        }
+
+        this.isFollowing = true
+
+        console.log('Followed locally')
+
         return true
-      }catch(error){
-        console.log(error)
-        this.error= error?.response?.data?.error?.message || error.message || 'An error occurred while unfollowing.'
+      } catch (error) {
+        console.error(error)
+        this.error = error?.message || 'An error occurred while following.'
         return false
-      }finally{
-        this.loading= false
+      } finally {
+        this.loading = false
       }
-    }
-  }
+    },
+
+    async unfollowAdvertiser(advertiserId, followerId) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const follows = this.getFollows()
+
+        const updatedFollows = follows.filter(
+          (follow) =>
+            !(
+              String(follow.advertiserId) === String(advertiserId) &&
+              String(follow.followerId) === String(followerId)
+            ),
+        )
+
+        this.saveFollows(updatedFollows)
+
+        this.isFollowing = false
+
+        console.log('Unfollowed locally')
+
+        return true
+      } catch (error) {
+        console.error(error)
+        this.error = error?.message || 'An error occurred while unfollowing.'
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+  },
 })

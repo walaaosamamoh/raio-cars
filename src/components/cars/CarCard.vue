@@ -36,7 +36,7 @@
       <div class="flex mt-4 gap-3">
         <!-- WhatsApp Button -->
         <a
-          href="https://wa.me/249912345678"
+          :href="`https://wa.me/${this.ad.phone}`"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Contact via WhatsApp"
@@ -47,7 +47,7 @@
 
         <!-- Call Button -->
         <a
-          href="tel:+249912345678"
+          :href="`tel:${this.ad.phone}`"
           aria-label="Call"
           class="flex-1 bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 transition-colors duration-300 flex items-center justify-center"
         >

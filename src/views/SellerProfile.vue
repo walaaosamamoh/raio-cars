@@ -306,7 +306,7 @@ export default {
     return {
       loading: false,
       error: null,
-      seller: []
+      seller: {}
     }
   },
   computed: {
@@ -331,13 +331,15 @@ export default {
       const sellerPageId = this.$route.params.id
 
       if(!loggedInUserId){
-        return 
+        return
       }
 
       if(this.isFollowing){
-        await this.followStore.unfollowAdvertiser(loggedInUserId, sellerPageId)
+        await this.followStore.unfollowAdvertiser(sellerPageId, loggedInUserId)
+        this.seller.followers --
       }else{
-        await this.followStore.followAdvertiser(loggedInUserId, sellerPageId)
+        await this.followStore.followAdvertiser(sellerPageId, loggedInUserId)
+        this.seller.followers ++
       }
     },
     shareProfile() {
@@ -370,9 +372,9 @@ export default {
     },
 
     async checkInitialFollowStatus(){
-      const advertiserId = this.authStore.advertiserId
-      const followerId = this.$route.params.id
-      await this.followStore.checkFollowStatus(advertiserId, followerId)
+      const loggedInUserId = this.authStore.advertiserId
+      const sellerPageId = this.$route.params.id
+      await this.followStore.checkFollowStatus(sellerPageId, loggedInUserId)
     }
   },
   async created() {
@@ -381,7 +383,11 @@ export default {
     await this.incrementAdvertiserProfileView(this.$route.params.id)
   },
   watch: {
-    '$route.params.id': 'fetchPageData',
+  async '$route.params.id'() {
+    await this.fetchPageData()
+    await this.checkInitialFollowStatus()
+    await this.incrementAdvertiserProfileView(this.$route.params.id)
   },
+},
 }
 </script>
