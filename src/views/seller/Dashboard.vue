@@ -80,7 +80,7 @@
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           {{ $t('dashboard.views-analytics') }}
         </h3>
-        <viewChart />
+        <viewChart :advertiser-id="auth.advertiserId" />
       </div>
 
       <!-- Performance Chart -->
@@ -90,7 +90,7 @@
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           {{ $t('dashboard.performance') }}
         </h3>
-        <performanceChart />
+        <performanceChart :advertiser-id="auth.advertiserId" />
       </div>
     </div>
 
@@ -165,44 +165,76 @@ import { mapState, mapActions } from 'pinia'
 import CarCard from '@/components/cars/CarCard.vue'
 import viewChart from '@/components/charts/viewChart.vue'
 import performanceChart from '@/components/charts/performanceChart.vue'
+
 export default {
   name: 'SellerDashboard',
-  components: { viewChart, performanceChart, CarCard },
+
+  components: {
+    viewChart,
+    performanceChart,
+    CarCard,
+  },
+
   data() {
     return {
       auth: useAuthStore(),
       adsStore: useAdsStore(),
     }
   },
+
   computed: {
-    ...mapState(useDashboardStore, ['viewsCount', 'followersCount']),
+    ...mapState(useDashboardStore, [
+      'viewsCount',
+      'followersCount',
+    ]),
+
     ads() {
-      return this.adsStore.ads.slice(0,5) || []
+      return this.adsStore.ads.slice(0, 5)
     },
+
     hasAds() {
       return this.ads.length > 0
     },
   },
+
   methods: {
-    ...mapActions(useDashboardStore, ['fetchViewsCount', 'fetchFollowersCount']),
+    ...mapActions(useDashboardStore, [
+      'fetchViewsCount',
+      'fetchFollowersCount',
+    ]),
+
     async fetchDashboardData() {
       const advertiserId = this.auth.advertiserId
-      if (advertiserId) {
-        await this.auth.getAdvertiser(advertiserId)
-        await this.adsStore.fetchAds({ advertiserId: advertiserId })
-      } else {
-        console.error('User is not properly authenticated. Redirectng to login')
+
+      if (!advertiserId) {
+        console.error(
+          'User is not properly authenticated. Redirecting to login.',
+        )
+
         this.$router.push({ name: 'signin' })
+        return
+      }
+
+      try {
+        // Get advertiser from local data
+        await this.auth.getAdvertiser(advertiserId)
+
+        // Get advertiser's ads from local data
+        await this.adsStore.fetchAds({
+          advertiserId,
+        })
+
+        // Get dashboard statistics from local data
+        await this.fetchViewsCount(advertiserId)
+        await this.fetchFollowersCount(advertiserId)
+      } catch (error) {
+        console.error('Error loading dashboard:', error)
       }
     },
   },
+
   async mounted() {
     await this.fetchDashboardData()
-    const advertiserId = this.auth.advertiserId
-    if (advertiserId) {
-      await this.fetchViewsCount(advertiserId)
-      await this.fetchFollowersCount(advertiserId)
-    }
   },
 }
 </script>

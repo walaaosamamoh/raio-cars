@@ -1,17 +1,24 @@
 import bmw from '@/assets/cars/bmw-series-2016.jpg'
 import bmw2 from '@/assets/cars/bmw-series-2-2016.jpg'
+
 import chevrolet from '@/assets/cars/chevrolet-tahoe-2009.jpg'
+
 import ford from '@/assets/cars/ford-ecosport-2019.jpg'
 import ford2 from '@/assets/cars/ford-ecosport-2-2019.jpg'
 import ford3 from '@/assets/cars/ford-ecosport-3-2019.jpg'
+
 import honda from '@/assets/cars/honda-accord-sport-2022.jpg'
 import honda2 from '@/assets/cars/honda-accord-sport-2-2022.jpg'
+
 import hyundai from '@/assets/cars/hyundai-elantra-2018.jpg'
 import hyundai2 from '@/assets/cars/hyundai-elantra-2-2018.jpg'
+
 import lexus from '@/assets/cars/lexus-is-200.jpg'
+
 import nissan from '@/assets/cars/nissan-sentra2013.jpg'
 import nissan2 from '@/assets/cars/nissan-sentra-2-2013.jpg'
 import nissan3 from '@/assets/cars/nissan-sentra-3-2013.jpg'
+
 import toyota from '@/assets/cars/toyota-camry-2019.jpg'
 
 export const adsData = [
@@ -43,6 +50,19 @@ export const adsData = [
     advertiser: 'Ahmed Cars',
     ads_count: 5,
     followers: 120,
+    views: 1240,
+    shares: 86,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 18 },
+      { date: '2026-09-08', views: 25 },
+      { date: '2026-09-09', views: 31 },
+      { date: '2026-09-10', views: 42 },
+      { date: '2026-09-11', views: 36 },
+      { date: '2026-09-12', views: 48 },
+      { date: '2026-09-13', views: 55 },
+    ],
+
     whatsapp: '249912345678',
     phone: '+249912345678',
     advertiser_photo: null,
@@ -76,6 +96,19 @@ export const adsData = [
     advertiser: 'Sudan Auto',
     ads_count: 8,
     followers: 95,
+    views: 980,
+    shares: 54,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 12 },
+      { date: '2026-09-08', views: 18 },
+      { date: '2026-09-09', views: 24 },
+      { date: '2026-09-10', views: 20 },
+      { date: '2026-09-11', views: 29 },
+      { date: '2026-09-12', views: 35 },
+      { date: '2026-09-13', views: 31 },
+    ],
+
     whatsapp: '249911111111',
     phone: '+249911111111',
     advertiser_photo: null,
@@ -109,6 +142,19 @@ export const adsData = [
     advertiser: 'Al Nile Motors',
     ads_count: 4,
     followers: 70,
+    views: 760,
+    shares: 42,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 10 },
+      { date: '2026-09-08', views: 15 },
+      { date: '2026-09-09', views: 19 },
+      { date: '2026-09-10', views: 23 },
+      { date: '2026-09-11', views: 21 },
+      { date: '2026-09-12', views: 28 },
+      { date: '2026-09-13', views: 26 },
+    ],
+
     whatsapp: '249922222222',
     phone: '+249922222222',
     advertiser_photo: null,
@@ -142,6 +188,19 @@ export const adsData = [
     advertiser: 'Modern Cars',
     ads_count: 6,
     followers: 150,
+    views: 1580,
+    shares: 112,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 22 },
+      { date: '2026-09-08', views: 30 },
+      { date: '2026-09-09', views: 35 },
+      { date: '2026-09-10', views: 41 },
+      { date: '2026-09-11', views: 48 },
+      { date: '2026-09-12', views: 52 },
+      { date: '2026-09-13', views: 60 },
+    ],
+
     whatsapp: '249933333333',
     phone: '+249933333333',
     advertiser_photo: null,
@@ -175,6 +234,19 @@ export const adsData = [
     advertiser: 'Khartoum Motors',
     ads_count: 3,
     followers: 60,
+    views: 640,
+    shares: 31,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 8 },
+      { date: '2026-09-08', views: 12 },
+      { date: '2026-09-09', views: 16 },
+      { date: '2026-09-10', views: 14 },
+      { date: '2026-09-11', views: 20 },
+      { date: '2026-09-12', views: 24 },
+      { date: '2026-09-13', views: 22 },
+    ],
+
     whatsapp: '249944444444',
     phone: '+249944444444',
     advertiser_photo: null,
@@ -208,6 +280,19 @@ export const adsData = [
     advertiser: 'Luxury Auto',
     ads_count: 7,
     followers: 110,
+    views: 1120,
+    shares: 67,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 16 },
+      { date: '2026-09-08', views: 21 },
+      { date: '2026-09-09', views: 27 },
+      { date: '2026-09-10', views: 25 },
+      { date: '2026-09-11', views: 32 },
+      { date: '2026-09-12', views: 38 },
+      { date: '2026-09-13', views: 35 },
+    ],
+
     whatsapp: '249955555555',
     phone: '+249955555555',
     advertiser_photo: null,
@@ -221,7 +306,7 @@ export const adsData = [
     model: 'Sentra',
     model_id: 7,
     price: 9000000,
-    yeear: 2013,
+    year: 2013,
     created_at: '2026-09-04T10:10:00',
     photos: [nissan, nissan2, nissan3],
     description:
@@ -241,6 +326,19 @@ export const adsData = [
     advertiser: 'Auto Market',
     ads_count: 2,
     followers: 45,
+    views: 420,
+    shares: 18,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 6 },
+      { date: '2026-09-08', views: 9 },
+      { date: '2026-09-09', views: 11 },
+      { date: '2026-09-10', views: 13 },
+      { date: '2026-09-11', views: 10 },
+      { date: '2026-09-12', views: 15 },
+      { date: '2026-09-13', views: 17 },
+    ],
+
     whatsapp: '249966666666',
     phone: '+249966666666',
     advertiser_photo: null,
@@ -274,6 +372,19 @@ export const adsData = [
     advertiser: 'Toyota Sudan',
     ads_count: 10,
     followers: 200,
+    views: 1890,
+    shares: 135,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 28 },
+      { date: '2026-09-08', views: 35 },
+      { date: '2026-09-09', views: 42 },
+      { date: '2026-09-10', views: 50 },
+      { date: '2026-09-11', views: 58 },
+      { date: '2026-09-12', views: 65 },
+      { date: '2026-09-13', views: 72 },
+    ],
+
     whatsapp: '249977777777',
     phone: '+249977777777',
     advertiser_photo: null,
