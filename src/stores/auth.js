@@ -61,9 +61,7 @@ export const useAuthStore = defineStore('authStore', {
         this.otp = otp
 
         // Find advertiser using the phone number
-        let advertiser = advertiserData.find(
-          (item) => item.phone === this.phone,
-        )
+        let advertiser = advertiserData.find((item) => item.phone === this.phone)
 
         // If no advertiser exists with this phone,
         // use the first demo advertiser for testing
@@ -94,8 +92,7 @@ export const useAuthStore = defineStore('authStore', {
       } catch (error) {
         console.error(error)
 
-        this.error =
-          error?.message || 'An error occurred while verifying OTP.'
+        this.error = error?.message || 'An error occurred while verifying OTP.'
 
         return false
       } finally {
@@ -111,9 +108,7 @@ export const useAuthStore = defineStore('authStore', {
 
       try {
         // Check if advertiser already exists
-        const existingAdvertiser = advertiserData.find(
-          (item) => item.phone === phone,
-        )
+        const existingAdvertiser = advertiserData.find((item) => item.phone === phone)
 
         if (existingAdvertiser) {
           this.error = 'An advertiser with this phone number already exists.'
@@ -148,9 +143,7 @@ export const useAuthStore = defineStore('authStore', {
       } catch (error) {
         console.error(error)
 
-        this.error =
-          error?.message ||
-          'An error occurred while creating advertiser.'
+        this.error = error?.message || 'An error occurred while creating advertiser.'
 
         return false
       } finally {
@@ -165,9 +158,7 @@ export const useAuthStore = defineStore('authStore', {
       this.message = ''
 
       try {
-        const advertiser = advertiserData.find(
-          (item) => String(item.id) === String(id),
-        )
+        const advertiser = advertiserData.find((item) => String(item.id) === String(id))
 
         if (!advertiser) {
           throw new Error('Advertiser not found.')
@@ -180,9 +171,62 @@ export const useAuthStore = defineStore('authStore', {
       } catch (error) {
         console.error(error)
 
-        this.error =
-          error?.message ||
-          'An error occurred while fetching advertiser.'
+        this.error = error?.message || 'An error occurred while fetching advertiser.'
+
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Update logged-in advertiser profile locally
+    async updateProfile({ name, about, avatarFile }) {
+      this.loading = true
+      this.error = null
+      this.message = ''
+
+      try {
+        const advertiser = advertiserData.find(
+          (item) => String(item.id) === String(this.advertiserId),
+        )
+
+        if (!advertiser) {
+          throw new Error('Advertiser not found.')
+        }
+
+        // Update text fields
+        advertiser.name = name
+        advertiser.about = about
+
+        // Update profile photo if a new file was selected
+        if (avatarFile) {
+          advertiser.photo = await new Promise((resolve, reject) => {
+            const reader = new FileReader()
+
+            reader.onload = () => resolve(reader.result)
+
+            reader.onerror = () => {
+              reject(new Error('Failed to read profile photo.'))
+            }
+
+            reader.readAsDataURL(avatarFile)
+          })
+        }
+
+        // Update auth store state
+        this.advertiser = { ...advertiser }
+        this.advertiserName = advertiser.name
+        this.phone = advertiser.phone
+
+        this.message = 'Profile updated successfully.'
+
+        console.log('Profile updated locally:', advertiser)
+
+        return true
+      } catch (error) {
+        console.error('Error updating profile:', error)
+
+        this.error = error?.message || 'An error occurred while updating profile.'
 
         return false
       } finally {
@@ -194,9 +238,7 @@ export const useAuthStore = defineStore('authStore', {
     // Does not modify logged-in advertiser state
     async getAdvertiserForView(id) {
       try {
-        const advertiser = advertiserData.find(
-          (item) => String(item.id) === String(id),
-        )
+        const advertiser = advertiserData.find((item) => String(item.id) === String(id))
 
         if (!advertiser) {
           throw new Error('Advertiser not found.')
@@ -204,10 +246,7 @@ export const useAuthStore = defineStore('authStore', {
 
         return advertiser
       } catch (error) {
-        console.error(
-          'Error fetching advertiser for view:',
-          error,
-        )
+        console.error('Error fetching advertiser for view:', error)
 
         throw error
       }
@@ -219,27 +258,19 @@ export const useAuthStore = defineStore('authStore', {
       this.message = ''
 
       try {
-        const advertiser = advertiserData.find(
-          (item) => String(item.id) === String(advertiserId),
-        )
+        const advertiser = advertiserData.find((item) => String(item.id) === String(advertiserId))
 
         if (advertiser) {
-          advertiser.profile_views =
-            (advertiser.profile_views || 0) + 1
+          advertiser.profile_views = (advertiser.profile_views || 0) + 1
         }
 
         this.message = 'Profile view counted successfully.'
 
         return true
       } catch (error) {
-        console.error(
-          'Error adding advertiser profile view:',
-          error,
-        )
+        console.error('Error adding advertiser profile view:', error)
 
-        this.error =
-          error?.message ||
-          'An error occurred while adding profile view.'
+        this.error = error?.message || 'An error occurred while adding profile view.'
 
         return false
       }
