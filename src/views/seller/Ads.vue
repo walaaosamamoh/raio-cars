@@ -91,7 +91,7 @@
                 <th
                   class="px-4 py-3 text-xs text-center font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap"
                 >
-                  {{ $t('seller_ads.drivetrain') }}
+                  {{ $t('seller_ads.drive_line') }}
                 </th>
                 <th
                   class="px-4 py-3 text-xs text-center font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap"
@@ -128,7 +128,12 @@
                         v-else
                         class="h-full w-full flex items-center justify-center text-gray-400"
                       >
-                        <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          class="w-4 h-4 sm:w-6 sm:h-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -168,7 +173,7 @@
                 <!-- Drivetrain -->
                 <td class="px-4 py-4 text-center whitespace-nowrap">
                   <div class="text-sm text-gray-900 dark:text-white">
-                    {{ ad.drivetrains || $t('seller_ads.not_specified') }}
+                    {{ ad.drive_line || $t('seller_ads.not_specified') }}
                   </div>
                 </td>
 
@@ -192,7 +197,12 @@
                       class="text-primary hover:text-primary-dark transition-colors p-1"
                       :title="$t('seller_ads.view')"
                     >
-                      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        class="w-4 h-4 sm:w-5 sm:h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
@@ -213,7 +223,12 @@
                       class="text-blue-600 hover:text-blue-800 transition-colors p-1"
                       :title="$t('seller_ads.edit')"
                     >
-                      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        class="w-4 h-4 sm:w-5 sm:h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
@@ -228,7 +243,12 @@
                       class="text-red-600 hover:text-red-800 transition-colors p-1"
                       :title="$t('seller_ads.delete')"
                     >
-                      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        class="w-4 h-4 sm:w-5 sm:h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
@@ -282,7 +302,10 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="ads.length > 0" class="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+        <div
+          v-if="ads.length > 0"
+          class="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700"
+        >
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <!-- Page Info -->
             <div class="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
@@ -390,16 +413,22 @@
 </template>
 
 <script>
-import { useCarDataStore } from '@/stores/carDataStore'
+import { useAuthStore } from '@/stores/auth'
+import { useAdsStore } from '@/stores/ads'
+import { adsData } from '@/data/adsData'
 import { toastService } from '@/services/toastService'
 import { swalMixin } from '@/mixins/swalMixin'
 import Swal from 'sweetalert2'
 
 export default {
   name: 'SellerAdsPage',
+
   mixins: [swalMixin],
+
   data() {
     return {
+      auth: useAuthStore(),
+      adsStore: useAdsStore(),
       loading: false,
       error: null,
       ads: [],
@@ -407,61 +436,71 @@ export default {
       pageSize: 5,
     }
   },
+
   computed: {
-    carStore() {
-      return useCarDataStore()
-    },
     totalPages() {
       return Math.ceil(this.ads.length / this.pageSize)
     },
+
     paginatedAds() {
       const start = (this.currentPage - 1) * this.pageSize
       const end = start + this.pageSize
+
       return this.ads.slice(start, end)
     },
+
     startIndex() {
       return (this.currentPage - 1) * this.pageSize
     },
+
     endIndex() {
       return Math.min(this.currentPage * this.pageSize, this.ads.length)
     },
   },
+
   async mounted() {
     await this.fetchAds()
   },
+
   methods: {
     async fetchAds() {
       this.loading = true
       this.error = null
 
       try {
-        this.ads = await this.mockFetchAds()
+        const advertiserId = this.auth.advertiserId
+
+        if (!advertiserId) {
+          throw new Error('You must be logged in to view your ads.')
+        }
+
+        this.ads = adsData.filter((ad) => String(ad.advertiser_id) === String(advertiserId))
+
+        this.currentPage = 1
       } catch (error) {
         console.error('Error fetching ads:', error)
+
         this.error = error.message || 'Failed to fetch ads'
+
         toastService.error('Failed to load ads')
       } finally {
         this.loading = false
       }
     },
 
-    async deleteAd(adId) {
-      const ad = this.ads.find((a) => a.id === adId)
+    deleteAd(adId) {
 
-      const result = await this.$swalConfirm(
-        'Are you sure?',
-        `You are about to delete ${ad.make} ${ad.model}`,
-        'Yes, delete it!',
+      this.$swalConfirm('Delete this ad?', 'This action cannot be undone.', 'delete').then(
+        (result) => {
+          if (result.isConfirmed) {
+            this.confirmDelete(adId)
+          }
+        },
       )
-
-      if (result.isConfirmed) {
-        await this.confirmDelete(adId)
-      }
     },
 
     async confirmDelete(adId) {
-      const isDark =
-        this.$store?.state?.theme === 'dark' || document.documentElement.classList.contains('dark')
+      const isDark = document.documentElement.classList.contains('dark')
 
       Swal.fire({
         title: 'Deleting...',
@@ -469,112 +508,39 @@ export default {
         allowOutsideClick: false,
         background: isDark ? '#1f2937' : '#fff',
         color: isDark ? '#fff' : '#000',
+
         didOpen: () => {
           Swal.showLoading()
         },
       })
 
       try {
-        await this.mockDeleteAd(adId)
-        Swal.close()
+        const success = await this.adsStore.deleteAd(adId)
+
+        if (!success) {
+          throw new Error(this.adsStore.error || 'Failed to delete ad.')
+        }
+
         this.ads = this.ads.filter((ad) => ad.id !== adId)
+
+        Swal.close()
 
         toastService.success('Your ad has been deleted successfully.')
 
+        // If the current page becomes empty after deleting
+        // the last item, move to the previous page.
         if (this.paginatedAds.length === 0 && this.currentPage > 1) {
           this.currentPage--
         }
       } catch (error) {
         Swal.close()
+
+        console.error('Error deleting ad:', error)
+
         toastService.error('Failed to delete ad. Please try again.')
       }
     },
 
-    // Mock Data Methods
-    mockFetchAds() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve([
-            {
-              id: 1,
-              make: 'Toyota',
-              model: 'Camry',
-              year: 2020,
-              price: 250000,
-              transmission: 'Automatic',
-              drivetrains: 'Front',
-              status: 'active',
-              featured_image: '/images/models/toyota-camry.jpg',
-            },
-            {
-              id: 2,
-              make: 'Honda',
-              model: 'Civic',
-              year: 2019,
-              price: 180000,
-              transmission: 'Manual',
-              drivetrains: 'Front',
-              status: 'pending',
-              featured_image: '/images/models/toyota-camry.jpg',
-            },
-            {
-              id: 3,
-              make: 'BMW',
-              model: 'X5',
-              year: 2021,
-              price: 450000,
-              transmission: 'Automatic',
-              drivetrains: 'Rear',
-              status: 'active',
-              featured_image: '/images/models/toyota-camry.jpg',
-            },
-            {
-              id: 4,
-              make: 'Mercedes',
-              model: 'C-Class',
-              year: 2020,
-              price: 380000,
-              transmission: 'Automatic',
-              drivetrains: 'Front',
-              status: 'rejected',
-              featured_image: '/images/models/nissan-sentra-sl.jpg',
-            },
-            {
-              id: 5,
-              make: 'Hyundai',
-              model: 'Elantra',
-              year: 2018,
-              price: 150000,
-              transmission: 'Manual',
-              drivetrains: 'Front',
-              status: 'active',
-              featured_image: '/images/models/toyota-land-cruiser-gxr2016.jpg',
-            },
-            {
-              id: 6,
-              make: 'Kia',
-              model: 'Sportage',
-              year: 2022,
-              price: 320000,
-              transmission: 'Automatic',
-              drivetrains: 'All',
-              status: 'active',
-              featured_image: '/images/models/nissan-sentra-sl.jpg',
-            },
-          ])
-        }, 1000)
-      })
-    },
-
-    mockDeleteAd(adId) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve()
-        }, 500)
-      })
-    },
-
-    // Other Methods
     formatPrice(price) {
       return new Intl.NumberFormat('en-US').format(price)
     },
@@ -582,10 +548,14 @@ export default {
     getStatusClass(status) {
       const classes = {
         active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+
         pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+
         rejected: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+
         draft: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
       }
+
       return classes[status] || classes.draft
     },
 
@@ -596,11 +566,17 @@ export default {
         rejected: 'Rejected',
         draft: 'Draft',
       }
+
       return texts[status] || status
     },
 
     viewAd(adId) {
-      this.$router.push(`/seller/cars/${adId}`)
+      this.$router.push({
+        name: 'sellerCarDetails',
+        params: {
+          id: adId,
+        },
+      })
     },
 
     editAd(adId) {
@@ -681,11 +657,11 @@ export default {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
-  
+
   .seller-ads-page .text-sm {
     font-size: 0.75rem;
   }
-  
+
   .seller-ads-page .min-w-full {
     min-width: 600px; /* أدنى عرض للجدول */
   }
@@ -696,7 +672,7 @@ export default {
   .seller-ads-page .gap-1 {
     gap: 0.25rem;
   }
-  
+
   .seller-ads-page .p-1 {
     padding: 0.25rem;
   }

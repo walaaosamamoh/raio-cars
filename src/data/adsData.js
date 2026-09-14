@@ -32,6 +32,7 @@ export const adsData = [
     price: 18500000,
     year: 2016,
     created_at: '2026-09-10T10:30:00',
+    status: 'active',
     photos: [bmw, bmw2],
     description:
       'Well maintained BMW with a clean interior and comfortable driving experience.',
@@ -78,6 +79,7 @@ export const adsData = [
     price: 22000000,
     year: 2009,
     created_at: '2026-09-09T14:00:00',
+    status: 'pending',
     photos: [chevrolet],
     description:
       'Spacious SUV suitable for family and long-distance driving.',
@@ -124,6 +126,7 @@ export const adsData = [
     price: 15000000,
     year: 2019,
     created_at: '2026-09-08T09:15:00',
+    status: 'active',
     photos: [ford, ford2, ford3],
     description:
       'Compact SUV with practical interior and smooth performance.',
@@ -170,6 +173,7 @@ export const adsData = [
     price: 28000000,
     year: 2022,
     created_at: '2026-09-07T16:20:00',
+    status: 'rejected',
     photos: [honda, honda2],
     description:
       'Modern sedan with sporty design and comfortable interior.',
@@ -216,6 +220,7 @@ export const adsData = [
     price: 12500000,
     year: 2018,
     created_at: '2026-09-06T11:00:00',
+    status: 'draft',
     photos: [hyundai, hyundai2],
     description:
       'Reliable and economical sedan in good condition.',
@@ -262,6 +267,7 @@ export const adsData = [
     price: 17500000,
     year: 2015,
     created_at: '2026-09-05T13:45:00',
+    status: 'active',
     photos: [lexus],
     description:
       'Comfortable luxury sedan with excellent road performance.',
@@ -308,6 +314,7 @@ export const adsData = [
     price: 9000000,
     year: 2013,
     created_at: '2026-09-04T10:10:00',
+    status: 'pending',
     photos: [nissan, nissan2, nissan3],
     description:
       'Affordable and practical sedan for everyday use.',
@@ -354,6 +361,7 @@ export const adsData = [
     price: 21000000,
     year: 2019,
     created_at: '2026-09-03T08:30:00',
+    status: 'active',
     photos: [toyota],
     description:
       'Reliable sedan with a comfortable interior and smooth ride.',

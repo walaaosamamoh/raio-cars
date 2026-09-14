@@ -301,6 +301,8 @@
     "createTime": "Create Time",
     "status": "Status",
     "actions": "Actions",
+    "transmission":"Transmission",
+    "drive_line": "Drive Line",
     
     "not_specified": "Not specified",
     "view": "View",

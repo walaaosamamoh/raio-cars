@@ -292,6 +292,34 @@ export const useAdsStore = defineStore('ads', {
       }
     },
 
+    async deleteAd(id) {
+      this.loading = true
+      this.error = null
+      this.message = ''
+
+      try {
+        const index = adsData.findIndex((ad) => String(ad.id) === String(id))
+
+        if (index === -1) {
+          throw new Error('Ad not found.')
+        }
+
+        adsData.splice(index, 1)
+
+        this.ads = this.ads.filter((ad) => String(ad.id) !== String(id))
+
+        this.totalAds = this.ads.length
+        this.message = 'Ad deleted successfully.'
+
+        return true
+      } catch (error) {
+        this.error = error?.message || 'An error occurred while deleting the ad.'
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+
     // Fetch photos - will be replaced with local logic later
     async getPhotos(adId, lang = localStorage.getItem('language') || 'en') {
       this.loading = true

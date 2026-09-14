@@ -295,6 +295,8 @@
     "createTime": "وقت الإنشاء",
     "status": "الحالة",
     "actions": "الإجراءات",
+    "transmission":"ناقل الحركة",
+    "drive_line": "نظام الدفع",
     
     "not_specified": "غير محدد",
     "view": "عرض",
