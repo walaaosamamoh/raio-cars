@@ -4,7 +4,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Seller Profile Card -->
       <div
-        class="bg-white dark:bg-gray-800 rounded-xl flex items-center px-6 shadow-sm border border-gray-200 dark:border-gray-700"
+        class="bg-white dark:bg-gray-800 rounded-xl p-6 flex items-center px-6 shadow-sm border border-gray-200 dark:border-gray-700"
       >
         <div
           class="flex items-center space-x-4"
