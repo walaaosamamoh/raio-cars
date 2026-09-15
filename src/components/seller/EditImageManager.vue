@@ -295,56 +295,53 @@ export default {
       }
     },
 
+    async handleDeleteSavedImage(photoId) {
+      const title = this.$t('edit_ad.confirm_delete_image') || 'Are you sure?'
 
-async handleDeleteSavedImage(photoId) {
-  // 1. تأكيد من المستخدم (يبقى كما هو)
-  const title = this.$t('edit_ad.confirm_delete_image') || 'Are you sure?';
-  const text = this.$t('edit_ad.confirm_delete_image_text') || 'This action cannot be undone.';
-  const confirmText = this.$t('create_ad.remove') || 'Yes, delete it!';
+      const text = this.$t('edit_ad.confirm_delete_image_text') || 'This action cannot be undone.'
 
-  const result = await this.$swalConfirm(title, text, confirmText);
-  if (!result.isConfirmed) return;
+      const confirmText = this.$t('create_ad.remove') || 'Yes, delete it!'
 
-  // 2. عرض مؤشر التحميل (يبقى كما هو)
-  const isDark = document.documentElement.classList.contains('dark');
-  Swal.fire({
-    title: this.$t('edit_ad.deleting') || 'Deleting...',
-    allowOutsideClick: false,
-    background: isDark ? '#1f2937' : '#fff',
-    color: isDark ? '#fff' : '#000',
-    didOpen: () => {
-      Swal.showLoading();
+      const result = await this.$swalConfirm(title, text, confirmText)
+
+      if (!result.isConfirmed) return
+
+      const isDark = document.documentElement.classList.contains('dark')
+
+      Swal.fire({
+        title: this.$t('edit_ad.deleting') || 'Deleting...',
+        allowOutsideClick: false,
+        background: isDark ? '#1f2937' : '#fff',
+        color: isDark ? '#fff' : '#000',
+        didOpen: () => {
+          Swal.showLoading()
+        },
+      })
+
+      this.isLoading = true
+
+      try {
+        const success = await this.adsStore.deletePhoto(this.adId, photoId)
+
+        Swal.close()
+
+        if (!success) {
+          throw new Error(this.adsStore.error || 'Failed to delete photo.')
+        }
+
+        toastService.success(this.$t('edit_ad.deleted_success') || 'Photo deleted successfully.')
+
+        await this.fetchSavedImages()
+      } catch (error) {
+        Swal.close()
+
+        console.error('Delete failed:', error)
+
+        toastService.error(this.$t('edit_ad.deleted_error') || 'Failed to delete image.')
+      } finally {
+        this.isLoading = false
+      }
     },
-  });
-
-  this.isLoading = true;
-  try {
-    // * 3. التغيير الرئيسي هنا: تحضير FormData *
-    const formData = new FormData();
-    formData.append('id', photoId);
-
-    // 4. استدعاء دالة الـ Store بالـ FormData
-    const success = await this.adsStore.deletePhoto(formData);
-
-    Swal.close();
-
-    if (success) {
-      toastService.success(this.$t('edit_ad.deleted_success') || 'Photo deleted successfully.');
-      // 5. تحديث الواجهة فورًا عند النجاح
-      this.savedImages = this.savedImages.filter(img => img.id !== photoId);
-    } else {
-      // إذا أعاد الـ API false، اعرض رسالة الخطأ من الـ Store
-      throw new Error(this.adsStore.error || 'API returned failure');
-    }
-
-  } catch (error) {
-    Swal.close();
-    console.error('Delete failed:', error);
-    toastService.error(this.$t('edit_ad.deleted_error') || 'Failed to delete image.');
-  } finally {
-    this.isLoading = false;
-  }
-},
     // --- FEATURED IMAGE HANDLING ---
     async setAsFeatured(imageId) {
       this.savedImages.forEach((img) => {

@@ -1,5 +1,5 @@
 <template>
- 
+
     <div class="space-y-4">
       <!-- Drag & Drop Upload Area -->
       <div
@@ -88,7 +88,7 @@
           {{ $t('validation.images_required') }}
         </p>
       </div>
-      
+
       <!-- Featured Image Preview -->
       <div
         v-if="featuredImage"
@@ -110,6 +110,7 @@
               {{ $t('create_ad.selected_files') }} ({{ selectedFiles.length }})
             </h4>
             <button
+              type="button"
               @click="removeAllFiles"
               class="px-3 py-1 border border-gray-300 dark:border-gray-600 text-xs text-gray-700 dark:text-gray-300 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
@@ -132,6 +133,7 @@
               class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2"
             >
               <button
+                type="button"
                 @click.stop="setFeaturedImage(file.id)"
                 :class="[
                   'text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors',
@@ -142,6 +144,7 @@
                 ★
               </button>
               <button
+                type="button"
                 @click.stop="removeFile(file.id)"
                 class="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition-colors"
                 :title="$t('create_ad.remove')"
@@ -162,7 +165,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Minimum Requirement Notice -->
       <div v-if="!hasImages" class="text-center">
         <p class="text-red-500 dark:primary-dark text-sm">
@@ -170,13 +173,13 @@
         </p>
       </div>
     </div>
-  
+
 </template>
 
 <script>
 export default {
   name: 'ImageUploader',
- 
+
   props: {
     modelValue: {
       type: Object,
@@ -227,8 +230,8 @@ export default {
       this.addFiles(files);
     },
     addFiles(files) {
-      const newFiles = files.filter(file => 
-        !this.selectedFiles.some(existingFile => 
+      const newFiles = files.filter(file =>
+        !this.selectedFiles.some(existingFile =>
             existingFile.file.name === file.name && existingFile.file.size === file.size
         )
       );
@@ -268,7 +271,7 @@ export default {
     },
     emitUpdate() {
       const featuredFileObj = this.selectedFiles.find(f => f.isFeatured);
-      
+
       const payload = {
         files: this.selectedFiles.map(f => f.file),
         featured_file: featuredFileObj ? featuredFileObj.file : (this.selectedFiles.length > 0 ? this.selectedFiles[0].file : null),
@@ -288,7 +291,7 @@ export default {
     },
     // Watch for external changes to showValidation
     showValidation: {
-      handler(newValue) {
+      handler() {
         // This can be used to trigger validation display from the parent
       },
     },

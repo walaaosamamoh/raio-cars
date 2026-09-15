@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import http from '../utils/http'
 import { adsData } from '@/data/adsData'
+import { advertiserData } from '@/data/advertiserData'
 
 export const useAdsStore = defineStore('ads', {
   state: () => ({
@@ -229,6 +229,22 @@ export const useAdsStore = defineStore('ads', {
       try {
         const data = Object.fromEntries(formData.entries())
 
+        // Get advertiser
+        const advertiserId = Number(data.advertiser_id)
+
+        if (!Number.isFinite(advertiserId) || advertiserId <= 0) {
+          throw new Error('Please select an advertiser.')
+        }
+
+        const advertiser = advertiserData.find(
+          (item) => Number(item.id) === advertiserId,
+        )
+
+        if (!advertiser) {
+          throw new Error(`Advertiser ${advertiserId} not found.`)
+        }
+
+        // Read uploaded images
         const photos = []
         const uploadedPhotos = formData.getAll('photos[]')
 
@@ -247,13 +263,16 @@ export const useAdsStore = defineStore('ads', {
           }
         }
 
+        // Generate new ad ID
         const newId = Math.max(...adsData.map((ad) => Number(ad.id)), 0) + 1
 
+        // Create new ad
         const newAd = {
           ...data,
 
           id: newId,
 
+          // Car information
           make: data.make_name,
           model: data.model_name,
 
@@ -262,25 +281,38 @@ export const useAdsStore = defineStore('ads', {
           odometer: Number(data.odometer) || 0,
           keys: Number(data.keys) || 0,
 
+          // Images
           photos,
           featured_image: photos[0] || '',
 
+          // Advertiser
+          advertiser_id: advertiserId,
+          advertiser: advertiser,
+
+          // Ad information
           status: 'active',
           created_at: new Date().toISOString(),
 
+          // Statistics
           views: 0,
           shares: 0,
           followers: 0,
           viewsHistory: [],
         }
 
+        // Remove temporary form fields
         delete newAd.make_name
         delete newAd.model_name
         delete newAd.imagesData
 
+        // Add ad to local data
         adsData.push(newAd)
         this.ads.push(newAd)
+
         this.totalAds = this.ads.length
+
+        // Update advertiser's ad count
+        advertiser.ads_count = Number(advertiser.ads_count || 0) + 1
 
         this.message = 'Ad created successfully.'
 
@@ -296,35 +328,33 @@ export const useAdsStore = defineStore('ads', {
       }
     },
 
-    // Update ad - will be replaced with local logic later
-    async updateAd(formData, lang = localStorage.getItem('language') || 'en') {
+    async updateAd(updatedAd) {
       this.loading = true
       this.error = null
       this.message = ''
 
       try {
-        formData.append('lang', lang)
+        const index = adsData.findIndex((ad) => String(ad.id) === String(updatedAd.id))
 
-        const response = await http.post('', formData, {
-          params: {
-            route: 'ads/update',
-          },
-        })
+        if (index === -1) {
+          throw new Error('Ad not found.')
+        }
 
-        this.message = response.data.message
+        Object.assign(adsData[index], updatedAd)
 
-        console.log('Ad updated successfully:', response.data)
+        this.ads = this.ads.map((ad) =>
+          String(ad.id) === String(updatedAd.id) ? { ...ad, ...updatedAd } : ad,
+        )
 
-        return response.data.success
+        if (this.currentAd?.id === updatedAd.id) {
+          this.currentAd = { ...this.currentAd, ...updatedAd }
+        }
+
+        this.message = 'Ad updated successfully.'
+        return true
       } catch (error) {
-        console.error('Error updating ad in store:', error.response || error)
-
-        this.error =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          error.message ||
-          'An unknown error occurred while updating the ad.'
-
+        console.error('Error updating ad:', error)
+        this.error = error?.message || 'Failed to update ad.'
         return false
       } finally {
         this.loading = false
@@ -359,32 +389,26 @@ export const useAdsStore = defineStore('ads', {
       }
     },
 
-    // Fetch photos - will be replaced with local logic later
-    async getPhotos(adId, lang = localStorage.getItem('language') || 'en') {
+    async getPhotos(adId) {
       this.loading = true
       this.error = null
 
       try {
-        const response = await http.get('', {
-          params: {
-            route: 'ads/getPhotos',
-            id: adId,
-            lang: lang,
-          },
-        })
+        const ad = adsData.find((item) => String(item.id) === String(adId))
 
-        console.log('Photos fetched:', response.data)
+        if (!ad) {
+          throw new Error('Ad not found.')
+        }
 
-        const responseData = response.data.data.photos
-
-        return responseData || []
+        return (ad.photos || []).map((photo, index) => ({
+          id: `${ad.id}-${index}`,
+          photo,
+          is_featured: index === 0,
+        }))
       } catch (error) {
-        console.log(error)
+        console.error('Error fetching photos:', error)
 
-        this.error =
-          error?.response?.data?.error ||
-          error.message ||
-          'An error occurred while fetching photos.'
+        this.error = error?.message || 'An error occurred while fetching photos.'
 
         return []
       } finally {
@@ -392,33 +416,51 @@ export const useAdsStore = defineStore('ads', {
       }
     },
 
-    // Insert photos - will be replaced with local logic later
-    async insertPhotos(formData, lang = localStorage.getItem('language') || 'en') {
+    async insertPhotos(formData) {
       this.loading = true
       this.error = null
       this.message = ''
 
       try {
-        formData.append('lang', lang)
+        const adId = formData.get('id')
 
-        const response = await http.post('', formData, {
-          params: {
-            route: 'ads/insertPhotos',
-          },
-        })
+        const ad = adsData.find((item) => String(item.id) === String(adId))
 
-        this.message = response.data.message
+        if (!ad) {
+          throw new Error('Ad not found.')
+        }
 
-        console.log(this.message)
+        const uploadedFiles = formData.getAll('photos')
+        const newPhotos = []
 
-        return response.data.success || false
+        for (const file of uploadedFiles) {
+          if (!(file instanceof File)) continue
+
+          const imageUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader()
+
+            reader.onload = () => resolve(reader.result)
+            reader.onerror = () => reject(new Error('Failed to read image.'))
+
+            reader.readAsDataURL(file)
+          })
+
+          newPhotos.push(imageUrl)
+        }
+
+        ad.photos = [...(ad.photos || []), ...newPhotos]
+
+        ad.featured_image = ad.photos[0] || ''
+
+        this.currentAd = { ...ad }
+
+        this.message = 'Photos uploaded successfully.'
+
+        return true
       } catch (error) {
-        console.log(error)
+        console.error('Error inserting photos:', error)
 
-        this.error =
-          error?.response?.data?.error ||
-          error.message ||
-          'An error occurred while inserting photos.'
+        this.error = error?.message || 'An error occurred while inserting photos.'
 
         return false
       } finally {
@@ -426,34 +468,37 @@ export const useAdsStore = defineStore('ads', {
       }
     },
 
-    // Delete photo - will be replaced with local logic later
-    async deletePhoto(formData, lang = localStorage.getItem('language') || 'en') {
+    async deletePhoto(adId, photoId) {
       this.loading = true
       this.error = null
       this.message = ''
 
-      formData.append('lang', lang)
-
       try {
-        const response = await http.post('', formData, {
-          params: {
-            route: 'ads/delPhoto',
-          },
-        })
+        const ad = adsData.find((item) => String(item.id) === String(adId))
 
-        this.message = response.data.message
+        if (!ad) {
+          throw new Error('Ad not found.')
+        }
 
-        console.log('Photo deleted successfully:', response.data)
+        const photoIndex = Number(String(photoId).split('-').pop())
 
-        return response.data.success || false
+        if (Number.isNaN(photoIndex) || photoIndex < 0 || photoIndex >= ad.photos.length) {
+          throw new Error('Photo not found.')
+        }
+
+        ad.photos.splice(photoIndex, 1)
+
+        ad.featured_image = ad.photos[0] || ''
+
+        this.currentAd = { ...ad }
+
+        this.message = 'Photo deleted successfully.'
+
+        return true
       } catch (error) {
-        console.error('Error deleting photo in store:', error.response || error)
+        console.error('Error deleting photo:', error)
 
-        this.error =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          error.message ||
-          'An unknown error occurred while deleting the photo.'
+        this.error = error?.message || 'An error occurred while deleting the photo.'
 
         return false
       } finally {
