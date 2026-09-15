@@ -2,7 +2,6 @@
 import { statesData } from '@/data/statesData'
 import { defineStore } from 'pinia'
 
-
 export const useStatesStore = defineStore('states', {
   state: () => ({
     states: [],
@@ -18,9 +17,9 @@ export const useStatesStore = defineStore('states', {
       try {
         lang = lang || localStorage.getItem('language') || 'en'
         const nameField = lang === 'ar' ? 'name_ar' : 'name_en'
-        this.states = statesData.map(state => ({
+        this.states = statesData.map((state) => ({
           id: state.id,
-          name: state[nameField] || state.name_en || state.name_ar
+          name: state[nameField] || state.name_en || state.name_ar,
         }))
       } catch (error) {
         this.error = error.message || 'Failed to fetch states'
@@ -36,15 +35,15 @@ export const useStatesStore = defineStore('states', {
       try {
         const lang = localStorage.getItem('language') || 'en'
         const nameField = lang === 'ar' ? 'name_ar' : 'name_en'
-        const state = statesData.find((state=> state.id === stateId))
+        const state = statesData.find((state) => String(state.id) === String(stateId))
         if (!state) return
-        this.cities = state.cities.map(city => ({
+        this.cities = state.cities.map((city) => ({
           id: city.id,
-          name: city[nameField] || city.name_en || city.name_ar
+          name: city[nameField] || city.name_en || city.name_ar,
         }))
       } catch (error) {
         this.error = error.message || 'Failed to fetch cities'
       }
-    }
-  }
+    },
+  },
 })

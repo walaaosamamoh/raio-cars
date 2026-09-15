@@ -46,7 +46,12 @@
       </div>
 
       <!-- Form -->
-      <VForm v-else @submit="handleSubmit" :validation-schema="formValidationSchema" class="space-y-6">
+      <VForm
+        v-else
+        @submit="handleSubmit"
+        :validation-schema="formValidationSchema"
+        class="space-y-6"
+      >
         <!-- Basic Information -->
         <CarFormSection :title="$t('create_ad.basic_info')">
           <FormSelect
@@ -255,7 +260,7 @@
     </div>
   </div>
 </template>
-<script> 
+<script>
 import { useAdsStore } from '@/stores/ads'
 import { useCarDataStore } from '@/stores/carDataStore'
 import { useMakesStore } from '@/stores/makes'
@@ -274,7 +279,7 @@ export default {
   components: { CarFormSection, FormSelect, FormInput, ImageUploader },
   data() {
     return {
-      loading: false, 
+      loading: false,
       formSubmitted: false,
       imagesValid: false,
       form: {
@@ -364,82 +369,97 @@ export default {
     onImagesValidation(isValid) {
       this.imagesValid = !!isValid
     },
-    
+
     onUploadError(error) {
       console.error('Image upload error received from child:', error)
     },
 
     async handleSubmit(values) {
-      console.log('handleSubmit triggered...');
-      this.formSubmitted = true; 
+      console.log('handleSubmit triggered...')
+      this.formSubmitted = true
 
       // 1. validate images
       if (!this.imagesValid) {
-        console.warn('Image validation failed. Aborting submission.');
-        this.$toast?.error?.(this.$t('validation.images_required') || 'Please upload at least one image.');
-        return;
+        console.warn('Image validation failed. Aborting submission.')
+        this.$toast?.error?.(
+          this.$t('validation.images_required') || 'Please upload at least one image.',
+        )
+        return
       }
 
       // 2. check VeeValidate validation
       if (!values || Object.keys(values).length === 0) {
-        console.warn('VeeValidate validation failed. Aborting submission.');
-        this.$toast?.error?.(this.$t('create_ad.fill_required_fields') || 'Please fill all required fields.');
-        return;
+        console.warn('VeeValidate validation failed. Aborting submission.')
+        this.$toast?.error?.(
+          this.$t('create_ad.fill_required_fields') || 'Please fill all required fields.',
+        )
+        return
       }
-    
-      this.loading = true;
-      console.log('Validation successful. Preparing data for submission...');
 
-      const formData = new FormData();
+      this.loading = true
+      console.log('Validation successful. Preparing data for submission...')
 
-      const makeName = this.makesStore.makes.find((m) => m.id == this.form.make)?.name || '';
-      const modelName = this.carStore.models.find((m) => m.id == this.form.model)?.name || '';
+      const formData = new FormData()
+
+      const makeName = this.makesStore.makes.find((m) => m.id == this.form.make)?.name || ''
+      const modelName = this.carStore.models.find((m) => m.id == this.form.model)?.name || ''
 
       const adPayload = {
-        ...this.form, 
-        ...values,   
+        ...this.form,
+        ...values,
         name: `${makeName} ${modelName} ${this.form.year}`,
-        advertiser: this.authStore.advertiser.id,
-      };
-      delete adPayload.imagesData; 
+        make_id: this.form.make,
+        model_id: this.form.model,
+        make_name: makeName,
+        model_name: modelName,
+        advertiser_id: this.authStore.advertiserId,
+      }
+
+      delete adPayload.imagesData
 
       for (const key in adPayload) {
         if (adPayload[key] !== null && adPayload[key] !== undefined) {
-          formData.append(key, adPayload[key]);
+          formData.append(key, adPayload[key])
         }
       }
 
-      const { files, featured_file } = this.form.imagesData;
-      
+      const { files, featured_file } = this.form.imagesData
+
       // add featured image first
       if (featured_file) {
-        formData.append('photos[]', featured_file, featured_file.name);
+        formData.append('photos[]', featured_file, featured_file.name)
       }
 
       // add other images
-      files.forEach(file => {
-        if (!featured_file || file.name !== featured_file.name || file.size !== featured_file.size) {
-          formData.append('photos[]', file, file.name);
+      files.forEach((file) => {
+        if (
+          !featured_file ||
+          file.name !== featured_file.name ||
+          file.size !== featured_file.size
+        ) {
+          formData.append('photos[]', file, file.name)
         }
-      });
-      
-      console.log('FormData prepared. Sending to store...');
+      })
+
+      console.log('FormData prepared. Sending to store...')
 
       try {
-        const success = await this.adsStore.createAd(formData);
+        const success = await this.adsStore.createAd(formData)
 
         if (success) {
-          this.$toast?.success?.(this.$t('create_ad.success_message') || 'Ad created successfully!');
-          this.$router.push({name: 'dashboard'});
+          this.$toast?.success?.(this.$t('create_ad.success_message') || 'Ad created successfully!')
+          this.$router.push({ name: 'dashboard' })
         } else {
-          this.$toast?.error?.(this.adsStore.error || this.$t('create_ad.error_message') || 'Failed to create ad.');
-          console.error('Failed to create ad:', this.adsStore.error);
+          this.$toast?.error?.(
+            this.adsStore.error || this.$t('create_ad.error_message') || 'Failed to create ad.',
+          )
+          console.error('Failed to create ad:', this.adsStore.error)
         }
       } catch (error) {
-        this.$toast?.error?.(error.message || this.$t('create_ad.error_message'));
-        console.error('An unexpected error occurred during ad creation:', error);
+        this.$toast?.error?.(error.message || this.$t('create_ad.error_message'))
+        console.error('An unexpected error occurred during ad creation:', error)
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
   },

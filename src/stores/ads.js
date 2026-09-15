@@ -221,35 +221,74 @@ export const useAdsStore = defineStore('ads', {
       }
     },
 
-    // Create ad - will be replaced with local logic later
-    async createAd(formData, lang = localStorage.getItem('language') || 'en') {
+    async createAd(formData) {
       this.loading = true
       this.error = null
       this.message = ''
 
       try {
-        formData.append('lang', lang)
+        const data = Object.fromEntries(formData.entries())
 
-        const response = await http.post('', formData, {
-          params: {
-            route: 'ads/create',
-          },
-        })
+        const photos = []
+        const uploadedPhotos = formData.getAll('photos[]')
 
-        this.message = response.data.message
-        this.adsId = response.data.ads_id
+        for (const file of uploadedPhotos) {
+          if (file instanceof File) {
+            const imageUrl = await new Promise((resolve, reject) => {
+              const reader = new FileReader()
 
-        console.log('Ad created successfully:', response.data)
+              reader.onload = () => resolve(reader.result)
+              reader.onerror = () => reject(new Error('Failed to read image.'))
 
-        return response.data.success
+              reader.readAsDataURL(file)
+            })
+
+            photos.push(imageUrl)
+          }
+        }
+
+        const newId = Math.max(...adsData.map((ad) => Number(ad.id)), 0) + 1
+
+        const newAd = {
+          ...data,
+
+          id: newId,
+
+          make: data.make_name,
+          model: data.model_name,
+
+          year: Number(data.year) || null,
+          price: Number(data.price) || 0,
+          odometer: Number(data.odometer) || 0,
+          keys: Number(data.keys) || 0,
+
+          photos,
+          featured_image: photos[0] || '',
+
+          status: 'active',
+          created_at: new Date().toISOString(),
+
+          views: 0,
+          shares: 0,
+          followers: 0,
+          viewsHistory: [],
+        }
+
+        delete newAd.make_name
+        delete newAd.model_name
+        delete newAd.imagesData
+
+        adsData.push(newAd)
+        this.ads.push(newAd)
+        this.totalAds = this.ads.length
+
+        this.message = 'Ad created successfully.'
+
+        return true
       } catch (error) {
-        console.error('Error creating ad in store:', error.response || error)
+        console.error('Error creating ad:', error)
 
-        this.error =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          error.message ||
-          'An unknown error occurred while creating the ad.'
+        this.error = error?.message || 'An error occurred while creating the ad.'
 
         return false
       } finally {
