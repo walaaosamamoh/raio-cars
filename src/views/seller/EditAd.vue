@@ -373,6 +373,13 @@ export default {
     await this.initializePage()
   },
   methods: {
+    findIdByName(options, name) {
+      return (
+        options.find((item) => String(item.name).toLowerCase() === String(name).toLowerCase())
+          ?.id || ''
+      )
+    },
+
     async initializePage() {
       this.pageLoading = true
       this.error = null
@@ -397,48 +404,37 @@ export default {
     },
 
     async populateFormWithAdData(adData) {
-      const findIdByName = (list, name) => {
-        if (name === null || name === undefined || !Array.isArray(list)) return name
-        const nameStr = String(name).toLowerCase()
-        const found = list.find(
-          (item) =>
-            (item.name && String(item.name).toLowerCase() === nameStr) ||
-            (item.name_en && String(item.name_en).toLowerCase() === nameStr) ||
-            (item.name_ar && String(item.name_ar).toLowerCase() === nameStr),
-        )
-        return found ? found.id : name
+      if (!adData) return
+
+      const makeId = adData.make_id
+      const modelId = adData.model_id
+
+      // adsData already stores the IDs
+      const stateId = adData.state
+      const cityId = adData.city
+
+      this.form = {
+        ...this.form,
+        ...adData,
+
+        make: String(makeId || ''),
+        model: String(modelId || ''),
+
+        state: String(stateId || ''),
+        city: String(cityId || ''),
+
+        imagesData: adData.photos || [],
       }
 
-      const makeId = findIdByName(this.makesStore.makes, adData.make)
+      // Load models for selected make
       if (makeId) {
         await this.carStore.fetchModels(makeId)
-        this.form.model = findIdByName(this.carStore.models, adData.model)
       }
-      this.form.make = makeId
 
-      const stateId = findIdByName(this.stateStore.states, adData.state)
+      // Load cities for selected state
       if (stateId) {
         await this.stateStore.fetchCities(stateId)
-        this.form.city = findIdByName(this.stateStore.cities, adData.city)
       }
-      this.form.state = stateId
-
-      this.form.year = adData.year
-      this.form.price = adData.price
-      this.form.phone = adData.phone
-      this.form.whatsapp = adData.whatsapp
-      this.form.description = adData.description
-      this.form.keys = adData.keys
-      this.form.transmission = findIdByName(this.carStore.transmissions, adData.transmission)
-      this.form.fuel_type = findIdByName(this.carStore.fuelTypes, adData.fuel_type)
-      this.form.drive_line = findIdByName(this.carStore.drivetrains, adData.drive_line)
-      this.form.cylinders = findIdByName(this.carStore.cylinders, adData.cylinders)
-      this.form.exterior_color = findIdByName(this.carStore.colors, adData.exterior_color)
-      this.form.interior_color = findIdByName(this.carStore.colors, adData.interior_color)
-      this.form.option = findIdByName(this.carStore.options, adData.option)
-      this.form.odometer = findIdByName(this.carStore.odometers, adData.odometer)
-
-      this.form.imagesData.images = Array.isArray(adData.photos) ? adData.photos : []
     },
 
     generateYears() {
@@ -464,35 +460,35 @@ export default {
     async handleDetailsSubmit(values) {
       this.detailsLoading = true
 
-      const formData = new FormData()
-      formData.append('id', this.adId)
-      formData.append('advertiser', this.authStore.advertiserId)
-
-      const makeName = this.makesStore.makes.find((m) => m.id === values.make)?.name || ''
-      const modelName = this.carStore.models.find((m) => m.id === values.model)?.name || ''
-      formData.append('name', `${makeName} ${modelName} ${values.year}`.trim())
-
-      for (const key in values) {
-        if (values[key] !== null && values[key] !== undefined) {
-          formData.append(key, values[key])
-        }
-      }
-
       try {
-        const success = await this.adsStore.updateAd(formData)
-        if (success) {
-          this.$toast.success(
-            this.adsStore.message || 'Ad details updated successfully.',
-          )
-          this.$router.push({name:'ads'})
-        } else {
-          throw new Error(this.adsStore.error || 'Failed to update details.')
+        const makeName =
+          this.makesStore.makes.find((m) => String(m.id) === String(values.make))?.name || ''
+
+        const modelName =
+          this.carStore.models.find((m) => String(m.id) === String(values.model))?.name || ''
+
+        const updatedAd = {
+          ...values,
+          id: this.adId,
+          make_id: values.make,
+          model_id: values.model,
+          make: makeName,
+          model: modelName,
+          advertiser_id: this.authStore.advertiserId,
+          name: `${makeName} ${modelName} ${values.year}`,
         }
+
+        const success = await this.adsStore.updateAd(updatedAd)
+
+        if (!success) {
+          throw new Error(this.adsStore.error || 'Failed to update ad.')
+        }
+
+        this.$toast.success('Ad updated successfully.')
+        this.$router.push({ name: 'ads' })
       } catch (error) {
-        console.error('Error updating ad details:', error)
-        this.$toast.error(
-          error?.message || this.$t('edit_ad.update_error') || 'Failed to update ad details.',
-        )
+        console.error('Error updating ad:', error)
+        this.$toast.error(error.message || 'Failed to update ad.')
       } finally {
         this.detailsLoading = false
       }
