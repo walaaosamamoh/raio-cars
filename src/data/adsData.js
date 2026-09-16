@@ -414,3 +414,25 @@ export const adsData = [
     advertiser_photo: null,
   },
 ]
+
+const formatDate = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+adsData.forEach((ad) => {
+  const today = new Date()
+
+  ad.viewsHistory = ad.viewsHistory.map((entry, index, history) => {
+    const date = new Date(today)
+    date.setDate(today.getDate() - (history.length - 1 - index))
+
+    return {
+      ...entry,
+      date: formatDate(date),
+    }
+  })
+})
