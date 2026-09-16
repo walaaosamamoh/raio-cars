@@ -53,7 +53,7 @@
         v-for="item in navItems"
         :key="item.name"
         :to="item.to"
-        @click="isMobileOpen = false"
+        @click="$emit('update:isMobileOpen', false)"
         :title="isCollapsed ? $t(item.label) : ''"
         :class="[
           'flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative',
@@ -84,20 +84,6 @@
         </span>
       </router-link>
     </nav>
-
-    <!-- Footer -->
-    <div class="p-4 border-t dark:border-gray-700">
-      <div class="flex items-center justify-center" :class="isCollapsed ? 'justify-center' : ''">
-        <div class="overflow-hidden transition-all duration-200" v-if="!isCollapsed">
-          <p class="text-sm text-gray-600 dark:text-white truncate">{{$t('dashboard.powered_by')}}</p>
-        </div>
-        <img
-          src="/images/etoo play.png"
-          alt="Etoo Play"
-          class="w-18 h-14 object-contain"
-        />       
-      </div>
-    </div>
 
     <!-- Mobile Menu Button (shown only on mobile) -->
     <button
@@ -166,7 +152,16 @@ export default {
       this.isCollapsed = !this.isCollapsed
     },
   },
+
+  beforeUnmount() {
+    document.body.style.overflow = "";
+  },
+
   watch: {
+    isMobileOpen(value) {
+      document.body.style.overflow = value ? 'hidden' : ''
+    },
+
     // Close mobile menu when route changes
     $route() {
       this.$emit("update:isMobileOpen", false)
@@ -178,7 +173,7 @@ export default {
         document.querySelector('.aside').style.transition = 'transform 0.3s ease-in-out'
       }, 100);
     }
-  
+
   },
   emits: ['close-sidebar', 'toggle-collapse','update:isMobileOpen'],
 }

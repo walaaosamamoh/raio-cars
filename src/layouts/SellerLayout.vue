@@ -6,7 +6,10 @@
     <!-- main content -->
     <div class="flex flex-grow flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
       <HeaderSeller @toggle-sidebar="isMobileSidebarOpen = !isMobileSidebarOpen"/>
-      <main class="flex-grow p-4 md:p-6 lg:p-8 overflow-auto">
+      <main
+        class="flex-grow p-4 md:p-6 lg:p-8 overflow-auto"
+        :style="{ overflow: isMobileSidebarOpen ? 'hidden' : 'auto' }"
+      >
         <router-view :key="$route.fullPath" />
       </main>
     </div>
