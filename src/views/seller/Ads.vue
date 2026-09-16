@@ -119,8 +119,8 @@
                       class="flex-shrink-0 h-10 w-12 sm:h-12 sm:w-16 bg-gray-200 dark:bg-gray-600 rounded-lg overflow-hidden"
                     >
                       <img
-                        v-if="ad.featured_image"
-                        :src="ad.featured_image"
+                        v-if="ad.featured_image || (ad.photos && ad.photos.length)"
+                        :src="ad.featured_image || ad.photos[0]"
                         :alt="ad.make + ' ' + ad.model"
                         class="h-full w-full object-cover"
                       />
@@ -166,14 +166,20 @@
                 <!-- Transmission -->
                 <td class="px-4 py-4 text-center whitespace-nowrap">
                   <div class="text-sm text-gray-900 dark:text-white">
-                    {{ ad.transmission || $t('seller_ads.not_specified') }}
+                    {{
+                      getLocalizedName(carData.transmissions, ad.transmission) ||
+                      $t('seller_ads.not_specified')
+                    }}
                   </div>
                 </td>
 
                 <!-- Drivetrain -->
                 <td class="px-4 py-4 text-center whitespace-nowrap">
                   <div class="text-sm text-gray-900 dark:text-white">
-                    {{ ad.drive_line || $t('seller_ads.not_specified') }}
+                    {{
+                      getLocalizedName(carData.drivetrains, ad.drive_line) ||
+                      $t('seller_ads.not_specified')
+                    }}
                   </div>
                 </td>
 
@@ -262,43 +268,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <!-- Empty State -->
-        <div v-if="ads.length === 0" class="text-center py-12">
-          <svg
-            class="w-16 h-16 text-gray-400 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-            ></path>
-          </svg>
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            {{ $t('seller_ads.no_ads_title') }}
-          </h3>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">
-            {{ $t('seller_ads.no_ads_description') }}
-          </p>
-          <router-link
-            to="/seller/create-ad"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              ></path>
-            </svg>
-            {{ $t('seller_ads.create_first') }}
-          </router-link>
         </div>
 
         <!-- Pagination -->
@@ -419,6 +388,7 @@ import { adsData } from '@/data/adsData'
 import { toastService } from '@/services/toastService'
 import { swalMixin } from '@/mixins/swalMixin'
 import Swal from 'sweetalert2'
+import { carData } from '@/data/carData'
 
 export default {
   name: 'SellerAdsPage',
@@ -456,6 +426,10 @@ export default {
     endIndex() {
       return Math.min(this.currentPage * this.pageSize, this.ads.length)
     },
+
+    carData() {
+      return carData
+    },
   },
 
   async mounted() {
@@ -463,6 +437,26 @@ export default {
   },
 
   methods: {
+    getLocalizedName(list, id) {
+      if (id === null || id === undefined || id === '') {
+        return '-'
+      }
+
+      const item = list?.find((item) => String(item.id) === String(id))
+
+      if (!item) {
+        return id
+      }
+
+      const language = this.$i18n.locale
+
+      if (language === 'ar') {
+        return item.name_ar || item.name_en || id
+      }
+
+      return item.name_en || item.name_ar || id
+    },
+
     async fetchAds() {
       this.loading = true
       this.error = null
@@ -489,8 +483,7 @@ export default {
     },
 
     deleteAd(adId) {
-
-      this.$swalConfirm('Delete this ad?', 'This action cannot be undone.', 'delete').then(
+      this.$swalConfirm(this.$t('seller_ads.delete_confirm'), this.$t('seller_ads.delete_warning'), this.$t('seller_ads.delete')).then(
         (result) => {
           if (result.isConfirmed) {
             this.confirmDelete(adId)
@@ -503,8 +496,8 @@ export default {
       const isDark = document.documentElement.classList.contains('dark')
 
       Swal.fire({
-        title: 'Deleting...',
-        text: 'Please wait while we delete your ad',
+        title: this.$t('seller_ads.deleting'),
+        text: this.$t('seller_ads.delete_message'),
         allowOutsideClick: false,
         background: isDark ? '#1f2937' : '#fff',
         color: isDark ? '#fff' : '#000',
@@ -521,11 +514,11 @@ export default {
           throw new Error(this.adsStore.error || 'Failed to delete ad.')
         }
 
-        this.ads = this.ads.filter((ad) => ad.id !== adId)
+        this.ads = this.ads.filter((ad) => String(ad.id) !== String(adId))
 
         Swal.close()
 
-        toastService.success('Your ad has been deleted successfully.')
+        toastService.success(this.$t('seller_ads.delete_success'))
 
         // If the current page becomes empty after deleting
         // the last item, move to the previous page.
@@ -537,7 +530,7 @@ export default {
 
         console.error('Error deleting ad:', error)
 
-        toastService.error('Failed to delete ad. Please try again.')
+        toastService.error(this.$t('seller_ads.delete_error'))
       }
     },
 
