@@ -254,33 +254,20 @@ export default {
     await this.fetchMakes()
 
     // 2. Get filter values from the initial route query
-    const makeNameFromQuery = this.$route.query.make || null
-    const modelNameFromQuery = this.$route.query.model || null
+    const makeId = this.$route.query.make || null
+    const modelId = this.$route.query.model || null
 
-    // 3. Populate the filters object based on the query
-    if (makeNameFromQuery) {
-      const makeObject = (this.makes || []).find(
-        (m) => (m.name || '').toLowerCase() === String(makeNameFromQuery).toLowerCase(),
-      )
-      if (makeObject) {
-        this.filters.makes = [makeObject.id] // Push the ID into the array
-        // Fetch models for this make so we can resolve the model name (if present in the URL)
-        await this.carDataStore.fetchModels(makeObject.id)
-      }
+    // 3. Populate the filters object based on the query parameters
+    if (makeId) {
+      this.filters.makes = [makeId]
+      // Fetch models for the selected make
+      await this.carDataStore.fetchModels(makeId)
+    }
+    if (modelId) {
+      this.filters.models = [modelId]
     }
 
-    if (modelNameFromQuery) {
-      const modelList = this.availableModels || this.carDataStore.models || []
-      const modelObject = modelList.find(
-        (m) => (m.name || '').toLowerCase() === String(modelNameFromQuery).toLowerCase(),
-      )
-      if (modelObject) {
-        this.filters.models = [modelObject.id] // Push the ID into the array
-      }
-    }
-
-    // 4. Trigger the initial fetch with the populated filters
-    // This ensures the page loads with the correct, filtered data
+    // 4. Fetch ads based on the initial filters
     this.applyAndFetch()
   },
 

@@ -59,7 +59,7 @@
             'group p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center',
             !make.id ? 'invisible' : '',
           ]"
-          @click="make.id ? $router.push({ name: 'cars', query: { make: make.name } }) : null"
+          @click="make.id ? $router.push({ name: 'cars', query: { make: make.id } }) : null"
           :style="{ cursor: make.id ? 'pointer' : 'default' }"
         >
           <template v-if="make.id">

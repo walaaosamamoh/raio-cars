@@ -1,6 +1,7 @@
 {
   "states":{
-    "states": "States"
+    "states": "States",
+    "selectState": "Select State"
   },
   "home": {
     "welcomeMessage": "Your dream drive starts here!",

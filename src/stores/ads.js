@@ -43,12 +43,12 @@ export const useAdsStore = defineStore('ads', {
 
         // Filter by make
         if (make) {
-          filteredAds = filteredAds.filter((ad) => ad.make_id === make)
+          filteredAds = filteredAds.filter((ad) => String(ad.make_id) === String(make))
         }
 
         // Filter by model
         if (model) {
-          filteredAds = filteredAds.filter((ad) => ad.model_id === model)
+          filteredAds = filteredAds.filter((ad) => String(ad.model_id) === String(model))
         }
 
         // Search by name

@@ -63,7 +63,7 @@
               class="flex items-center p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b last:border-b-0 dark:border-gray-700"
             >
               <img
-                :src="getPhoto(car)"
+                :src="car.photos[0] || '/images/placeholder.png'"
                 :alt="car.name"
                 class="h-10 w-16 object-cover rounded-md ltr:mr-4 rtl:ml-4"
               />
@@ -101,24 +101,14 @@ export default {
       this.searchResults = this.adsStore.ads
     },
 
-    // convert string to array
-    getPhoto(car) {
-      try{
-        const photosArray = JSON.parse(car.photos)
-        return photosArray.length > 0 ? photosArray[0] : '/images/placeholder.png'
-      }catch(error){
-        return '/images/placeholder.png'
-      }
-    },
-
     selectCar(car) {
       this.searchQuery = ''
       this.searchResults = []
       this.$router.push({
         name: 'cars',
         query: {
-          make: car.make,
-          model: car.model,
+          make: car.make_id,
+          model: car.model_id,
         },
       })
     },
