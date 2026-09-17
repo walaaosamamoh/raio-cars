@@ -348,7 +348,9 @@
     "deleting": "Deleting...",
     "deleting_text": "Please wait while we delete the photo",
     "confirm_delete_image": "Are you sure you want to delete this photo?",
-    "confirm_delete_image_text": "This will permanently remove the photo from your ad."
+    "confirm_delete_image_text": "This will permanently remove the photo from your ad.",
+    "featured_success": "Featured image updated successfully!",
+    "featured_error": "Error updating featured image. Please try again."
   },
   "editProfile": {
     "edit_title": "Edit Profile",

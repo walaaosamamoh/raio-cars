@@ -236,9 +236,7 @@ export const useAdsStore = defineStore('ads', {
           throw new Error('Please select an advertiser.')
         }
 
-        const advertiser = advertiserData.find(
-          (item) => Number(item.id) === advertiserId,
-        )
+        const advertiser = advertiserData.find((item) => Number(item.id) === advertiserId)
 
         if (!advertiser) {
           throw new Error(`Advertiser ${advertiserId} not found.`)
@@ -411,6 +409,47 @@ export const useAdsStore = defineStore('ads', {
         this.error = error?.message || 'An error occurred while fetching photos.'
 
         return []
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async setFeaturedPhoto(adId, imageId) {
+      this.loading = true
+      this.error = null
+      this.message = ''
+
+      try {
+        const ad = adsData.find((item) => String(item.id) === String(adId))
+
+        if (!ad) {
+          throw new Error('Ad not found.')
+        }
+
+        const photoIndex = Number(String(imageId).split('-').pop())
+
+        if (Number.isNaN(photoIndex) || photoIndex < 0 || photoIndex >= ad.photos.length) {
+          throw new Error('Photo not found.')
+        }
+
+        // Move selected photo to the first position
+        const [featuredPhoto] = ad.photos.splice(photoIndex, 1)
+        ad.photos.unshift(featuredPhoto)
+
+        // First photo is always the featured image
+        ad.featured_image = ad.photos[0]
+
+        this.currentAd = { ...ad }
+
+        this.message = 'Featured photo updated successfully.'
+
+        return true
+      } catch (error) {
+        console.error('Error setting featured photo:', error)
+
+        this.error = error?.message || 'An error occurred while setting featured photo.'
+
+        return false
       } finally {
         this.loading = false
       }

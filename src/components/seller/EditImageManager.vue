@@ -344,9 +344,23 @@ export default {
     },
     // --- FEATURED IMAGE HANDLING ---
     async setAsFeatured(imageId) {
-      this.savedImages.forEach((img) => {
-        img.is_featured = img.id === imageId
-      })
+      try {
+        const success = await this.adsStore.setFeaturedPhoto(this.adId, imageId)
+
+        if (!success) {
+          throw new Error(this.adsStore.error || 'Failed to set featured photo')
+        }
+
+        await this.fetchSavedImages()
+
+        toastService.success(
+          this.$t('edit_ad.featured_success') || 'Featured image updated successfully.',
+        )
+      } catch (error) {
+        console.error('Failed to set featured image:', error)
+
+        toastService.error(this.$t('edit_ad.featured_error') || 'Failed to update featured image.')
+      }
     },
   },
   beforeUnmount() {
