@@ -12,7 +12,7 @@
         >
           <img
             :src="auth.advertiser.photo"
-            class="w-16 h-16 rounded-full border-2 border-gray-200"
+            class="w-16 h-16 rounded-full border-2 border-gray-200 object-cover"
           />
           <h3 class="font-semibold text-lg dark:text-white">{{ auth.advertiser.name }}</h3>
         </div>

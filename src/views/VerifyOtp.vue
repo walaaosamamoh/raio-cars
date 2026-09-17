@@ -85,7 +85,7 @@ export default {
       otp: '',
       phoneNumber: '',
       resendCooldown: 60,
-      auth: useAuthStore() 
+      auth: useAuthStore()
     };
   },
   methods: {
@@ -105,10 +105,10 @@ export default {
       const success = await this.auth.verifyOtp(this.otp);
 
       if (success) {
-        this.$toast.success(this.auth.message || $t('sign_in.otp_verified_success'));
-        console.log(this.auth.advertiserName)
-        // redirect based on advertiserName presence
-        if(this.auth.advertiserName === null || this.auth.advertiserName === undefined) {
+        this.$toast.success(this.auth.message || this.$t('sign_in.otp_verified_success'));
+
+        // redirect based on isNewAdvertiser presence
+        if(this.auth.isNewAdvertiser) {
           this.$router.push({ name: 'completeProfile' });
         } else {
           this.$router.push({ name: 'dashboard' });
@@ -138,7 +138,7 @@ export default {
       if (success) {
         this.startCooldown();
       } else {
-        this.$toast.error($t('sign_in.network_error'));
+        this.$toast.error(this.$t('sign_in.network_error'));
       }
     }
   },

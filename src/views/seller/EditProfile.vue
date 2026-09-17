@@ -226,12 +226,16 @@ export default {
       }
 
       // Revoke previous preview if it was a blob URL
-      if (this.profileForm.avatarPreview && this.profileForm.avatarPreview.startsWith('blob:')) {
+      if (this.isBlobUrl(this.profileForm.avatarPreview)) {
         URL.revokeObjectURL(this.profileForm.avatarPreview)
       }
 
       this.profileForm.avatarFile = file
       this.profileForm.avatarPreview = URL.createObjectURL(file)
+    },
+
+    isBlobUrl(value) {
+      return typeof value === 'string' && value.startsWith('blob:')
     },
 
     loadCurrentUser() {
@@ -249,7 +253,7 @@ export default {
   },
   beforeUnmount() {
     // Clean up the blob URL to prevent memory leaks
-    if (this.profileForm.avatarPreview && this.profileForm.avatarPreview.startsWith('blob:')) {
+    if (this.isBlobUrl(this.profileForm.avatarPreview)) {
       URL.revokeObjectURL(this.profileForm.avatarPreview)
     }
   },

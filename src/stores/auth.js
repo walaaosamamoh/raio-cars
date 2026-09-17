@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('authStore', {
     token: Cookies.get('auth-token') || null,
     advertiser: {},
     advertiserName: '',
+    isNewAdvertiser: false,
     advertiserId: Cookies.get('advertiser-id') || '',
     loading: false,
     error: null,
@@ -60,15 +61,24 @@ export const useAuthStore = defineStore('authStore', {
 
         this.otp = otp
 
-        // Find advertiser using the phone number
-        let advertiser = advertiserData.find((item) => item.phone === this.phone)
+        // Check if advertiser exists
+        const advertiser = advertiserData.find((item) => item.whatsapp === this.phone)
 
-        // If no advertiser exists with this phone,
-        // use the first demo advertiser for testing
+        // NEW ADVERTISER
         if (!advertiser) {
-          advertiser = advertiserData[0]
+          this.isNewAdvertiser = true
+          this.advertiser = {}
+          this.advertiserName = ''
+
+          this.message = 'OTP verified successfully.'
+
+          console.log('New advertiser:', this.phone)
+
+          return true
         }
 
+        // EXISTING ADVERTISER
+        this.isNewAdvertiser = false
         this.token = `demo-token-${advertiser.id}`
         this.advertiserId = advertiser.id
         this.advertiserName = advertiser.name
@@ -86,7 +96,7 @@ export const useAuthStore = defineStore('authStore', {
 
         this.message = 'OTP verified successfully.'
 
-        console.log('Logged in advertiser:', advertiser)
+        console.log('Existing advertiser:', advertiser)
 
         return true
       } catch (error) {
@@ -107,7 +117,6 @@ export const useAuthStore = defineStore('authStore', {
       this.message = ''
 
       try {
-        // Check if advertiser already exists
         const existingAdvertiser = advertiserData.find((item) => item.phone === phone)
 
         if (existingAdvertiser) {
@@ -115,12 +124,29 @@ export const useAuthStore = defineStore('authStore', {
           return false
         }
 
+        // Convert image File to a usable URL
+        let photoUrl = '/images/users/default-avatar.webp'
+
+        if (photo instanceof File) {
+          photoUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader()
+
+            reader.onload = () => resolve(reader.result)
+
+            reader.onerror = () => {
+              reject(new Error('Failed to read profile photo.'))
+            }
+
+            reader.readAsDataURL(photo)
+          })
+        }
+
         const newAdvertiser = {
           id: advertiserData.length + 1,
           name,
           phone,
           whatsapp: phone,
-          photo: photo || '/images/users/default-avatar.webp',
+          photo: photoUrl,
           about: '',
           state: '',
           city: '',
@@ -131,13 +157,27 @@ export const useAuthStore = defineStore('authStore', {
 
         advertiserData.push(newAdvertiser)
 
+        // Authenticate new advertiser
         this.advertiser = newAdvertiser
         this.advertiserName = newAdvertiser.name
         this.advertiserId = newAdvertiser.id
+        this.isNewAdvertiser = false
+
+        this.token = `demo-token-${newAdvertiser.id}`
+
+        Cookies.set('auth-token', this.token, {
+          expires: 7,
+          secure: import.meta.env.MODE === 'production',
+        })
+
+        Cookies.set('advertiser-id', String(this.advertiserId), {
+          expires: 7,
+          secure: import.meta.env.MODE === 'production',
+        })
 
         this.message = 'Advertiser created successfully.'
 
-        console.log('Advertiser created locally:', newAdvertiser)
+        console.log('New advertiser created:', newAdvertiser)
 
         return true
       } catch (error) {

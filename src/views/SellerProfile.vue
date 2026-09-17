@@ -83,6 +83,7 @@
 
               <!-- follow button -->
               <button
+                v-if="authStore.advertiserId"
                 @click="toggleFollow"
                 :class="[
                   'px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-300 flex items-center gap-2 w-32 justify-center',
