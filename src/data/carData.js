@@ -53,5 +53,6 @@ export const carData = {
     { id: 6, make_id: 10, name_en: 'IS 200', name_ar: 'IS 200' },
     { id: 7, make_id: 6, name_en: 'Sentra', name_ar: 'سنترا' },
     { id: 8, make_id: 1, name_en: 'Camry', name_ar: 'كامري' },
+    { id: 9, make_id: 1, name_en: 'Land Cruiser', name_ar: 'لاند كروزر' },
   ],
 }

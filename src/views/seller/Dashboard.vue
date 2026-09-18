@@ -130,7 +130,7 @@
             <router-link
               v-for="ad in ads"
               :key="ad.id"
-              :to="{ name: 'sellerCarDetails', params: { id: ad.id } }"
+              :to="{ name: 'carDetails', params: { id: ad.id } }"
             >
               <CarCard :ad="ad" />
             </router-link>

@@ -154,7 +154,7 @@ export default {
       selectedFile: null,
       previewImage: null,
       imageError: '',
-      defaultImage: '/images/default-avatar.png',
+      defaultImage: '/src/assets/default/default-avatar.png',
       profileSchema: yup.object({
         name: yup
           .string()

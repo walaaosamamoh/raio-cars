@@ -5,7 +5,7 @@
       <div class="flex gap-2">
         <!-- Left Side: Logo -->
         <router-link :to="{ name: 'home' }" class="flex-shrink-0">
-          <img class="h-14 md:h-16 w-auto" :src="theme==='dark' ? '/images/logo_dark.jpeg' : '/images/logo.jpeg'" alt="Logo" />
+          <img class="h-14 md:h-16 w-auto" :src="theme==='dark' ? '/src/assets/default/logo_dark.jpeg' : '/src/assets/default/logo.jpeg'" alt="Logo" />
         </router-link>
 
         <!-- Center/Desktop-only items -->

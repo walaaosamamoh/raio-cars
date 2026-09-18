@@ -565,7 +565,7 @@ export default {
 
     viewAd(adId) {
       this.$router.push({
-        name: 'sellerCarDetails',
+        name: 'carDetails',
         params: {
           id: adId,
         },

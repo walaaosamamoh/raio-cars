@@ -7,49 +7,43 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/HomeView.vue'),
+      component: () => import('../views/default/HomeView.vue'),
       meta: {layout: 'default'}
     },
     {
       path: '/cars',
       name: 'cars',
-      component: () => import('../views/CarsView.vue'),
+      component: () => import('../views/default/CarsView.vue'),
       meta: {layout: 'default'}
     },
     {
       path: '/cars/:id',
       name: 'carDetails',
-      component: () => import('../views/CarDetails.vue'),
+      component: () => import('../views/default/CarDetails.vue'),
       meta: {layout: 'default'}
     },
     {
       path: '/seller/:id',
       name: 'sellerProfile',
-      component: () => import('../views/SellerProfile.vue'),
+      component: () => import('../views/default/SellerProfile.vue'),
       meta: {layout: 'default'}
-    },
-    {
-      path: '/seller/cars/:id',
-      name: 'sellerCarDetails',
-      component: () => import('../views/CarDetails.vue'),
-      meta: {layout: 'seller'}
     },
     {
       path: '/signin',
       name: 'signIn',
-      component: () => import('../views/SignIn.vue'),
+      component: () => import('../views/auth/SignIn.vue'),
       meta: {layout: 'auth'}
     },
     {
       path: '/verifyOtp',
       name: 'verifyOtp',
-      component: () => import('../views/VerifyOtp.vue'),
+      component: () => import('../views/auth/VerifyOtp.vue'),
       meta: {layout: 'auth'}
     },
     {
       path: '/complete-profile',
       name: 'completeProfile',
-      component: () => import('../views/CompleteProfile.vue'),
+      component: () => import('../views/auth/CompleteProfile.vue'),
       meta: {layout: 'auth'}
     },
     {

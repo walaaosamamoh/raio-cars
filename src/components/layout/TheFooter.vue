@@ -26,6 +26,7 @@
           <h2 class="text-lg md:text-xl font-bold mb-4 text-white">{{$t('states.states')}}</h2>
           <div
             v-for="state in states"
+            :key="state.id"
             class="flex flex-col space-y-2">
             <span>{{ state.name }}</span>
           </div>
@@ -83,7 +84,7 @@
             <!-- Google Play Button -->
             <a href="#" target="_blank" class="transition hover:opacity-80">
               <img
-                src="/images/googleplay-badge-01.webp"
+                src="/src/assets/default/googleplay-badge-01.webp"
                 alt="Get it on Google Play"
                 class="h-16 w-auto"
               />
@@ -92,7 +93,7 @@
             <!-- App Store Button -->
             <a href="#" target="_blank" class="transition hover:opacity-80">
               <img
-                src="/images/download-on-the-app-store.svg"
+                src="/src/assets/default/download-on-the-app-store.svg"
                 alt="Download on the App Store"
                 class="h-8 w-auto"
               />
@@ -103,7 +104,7 @@
 
       <!-- Copyright Section -->
       <div class="text-center sm:flex sm:items-center sm:gap-4 sm:text-start mt-10 pt-6 border-t border-gray-700">
-        <img src="/images/logo_f.jpeg" alt="logo" class="h-14 mb-2 inline-block"/>
+        <img src="/src/assets/default/logo_f.jpeg" alt="logo" class="h-14 mb-2 inline-block"/>
         <p class="text-sm text-gray-400">{{$t('footer.copyrightText')}}</p>
       </div>
     </div>

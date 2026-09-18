@@ -5,7 +5,7 @@
   >
     <!-- background img -->
     <img
-      src="/images/hero-image.jpg"
+      src="/src/assets/default/hero-image.jpg"
       alt="Hero Background"
       class="absolute inset-0 w-full h-full object-cover z-0"
     />

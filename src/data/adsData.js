@@ -21,6 +21,14 @@ import nissan3 from '@/assets/cars/nissan-sentra-3-2013.jpg'
 
 import toyota from '@/assets/cars/toyota-camry-2019.jpg'
 
+import landCruiser from '@/assets/cars/toyota-land-cruiser-gxr2016.jpg'
+import landCruiser2 from '@/assets/cars/landcruiser.jpg'
+
+import toyotacamry from '@/assets/cars/toyota-camry-se-2017.jpg'
+import toyotacamry2 from '@/assets/cars/toyota-camry.jpg'
+
+import nissanSentra from '@/assets/cars/nissan-sentra-sl.jpg'
+
 export const adsData = [
   {
     id: 1,
@@ -413,6 +421,154 @@ export const adsData = [
     phone: '+249977777777',
     advertiser_photo: null,
   },
+
+  {
+    id: 9,
+    name: 'Toyota Land Cruiser 2016',
+    make: 'Toyota',
+    make_id: 1,
+    model: 'Land Cruiser',
+    model_id: 9,
+    price: 25000000,
+    year: 2016,
+    created_at: '2026-09-03T08:30:00',
+    status: 'active',
+    photos: [landCruiser, landCruiser2],
+    description:
+      'Reliable SUV with a comfortable interior and smooth ride.',
+
+    odometer: 2,
+    cylinders: 1,
+    transmission: 1,
+    keys: 2,
+    option: 1,
+    fuel_type: 1,
+    drive_line: 1,
+    exterior_color: 2,
+    interior_color: 7,
+
+    city: 1,
+    state: 1,
+    advertiser_id: 8,
+    advertiser: 'Toyota Sudan',
+    ads_count: 10,
+    followers: 200,
+    views: 1890,
+    shares: 135,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 28 },
+      { date: '2026-09-08', views: 35 },
+      { date: '2026-09-09', views: 42 },
+      { date: '2026-09-10', views: 50 },
+      { date: '2026-09-11', views: 58 },
+      { date: '2026-09-12', views: 65 },
+      { date: '2026-09-13', views: 72 },
+    ],
+
+    whatsapp: '249977777777',
+    phone: '+249977777777',
+    advertiser_photo: null,
+  },
+
+  {
+    id: 10,
+    name: 'Toyota Camry 2017',
+    make: 'Toyota',
+    make_id: 1,
+    model: 'Camry',
+    model_id: 8,
+    price: 18000000,
+    year: 2017,
+    created_at: '2026-09-03T08:30:00',
+    status: 'active',
+    photos: [toyotacamry, toyotacamry2],
+    description:
+      'Reliable sedan with a comfortable interior and smooth ride.',
+
+    odometer: 2,
+    cylinders: 1,
+    transmission: 1,
+    keys: 2,
+    option: 1,
+    fuel_type: 1,
+    drive_line: 1,
+    exterior_color: 2,
+    interior_color: 7,
+
+    city: 1,
+    state: 1,
+    advertiser_id: 8,
+    advertiser: 'Toyota Sudan',
+    ads_count: 10,
+    followers: 200,
+    views: 1890,
+    shares: 135,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 28 },
+      { date: '2026-09-08', views: 35 },
+      { date: '2026-09-09', views: 42 },
+      { date: '2026-09-10', views: 50 },
+      { date: '2026-09-11', views: 58 },
+      { date: '2026-09-12', views: 65 },
+      { date: '2026-09-13', views: 72 },
+    ],
+
+    whatsapp: '249977777777',
+    phone: '+249977777777',
+    advertiser_photo: null,
+  },
+
+  {
+    id: 11,
+    name: 'Nissan Sentra 2015',
+    make: 'Nissan',
+    make_id: 6,
+    model: 'Sentra',
+    model_id: 6,
+    price: 22000000,
+    year: 2009,
+    created_at: '2026-09-09T14:00:00',
+    status: 'pending',
+    photos: [nissanSentra],
+    description:
+      'Spacious SUV suitable for family and long-distance driving.',
+
+    odometer: 4,
+    cylinders: 3,
+    transmission: 1,
+    keys: 2,
+    option: 1,
+    fuel_type: 1,
+    drive_line: 3,
+    exterior_color: 2,
+    interior_color: 7,
+
+    city: 1,
+    state: 1,
+    advertiser_id: 2,
+    advertiser: 'Sudan Auto',
+    ads_count: 8,
+    followers: 95,
+    views: 980,
+    shares: 54,
+
+    viewsHistory: [
+      { date: '2026-09-07', views: 12 },
+      { date: '2026-09-08', views: 18 },
+      { date: '2026-09-09', views: 24 },
+      { date: '2026-09-10', views: 20 },
+      { date: '2026-09-11', views: 29 },
+      { date: '2026-09-12', views: 35 },
+      { date: '2026-09-13', views: 31 },
+    ],
+
+    whatsapp: '249911111111',
+    phone: '+249911111111',
+    advertiser_photo: null,
+  },
+
 ]
 
 const formatDate = (date) => {
