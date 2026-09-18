@@ -144,7 +144,7 @@ export default {
   },
 
   created() {
-    this.phoneNumber = this.$route.params.phone || this.$route.query.phone || 'your phone';
+    this.phoneNumber = this.$route.query.phone || 'your phone';
     this.startCooldown();
   }
 };

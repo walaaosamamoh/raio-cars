@@ -186,7 +186,7 @@ export default {
 
          if (success) {
            this.$toast.success(this.auth.message);
-           this.$router.push({ name: 'verifyOtp', params: { phone: fullPhoneNumber } });
+           this.$router.push({ name: 'verifyOtp', query: { phone: fullPhoneNumber } });
          }
        } catch {
          this.$toast.error('Network error occurred');

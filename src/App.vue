@@ -29,13 +29,22 @@ export default {
 },
   methods: {
     async fetchAllData(lang) {
-      await Promise.all([
+      const requests = [
         this.carDataStore.fetchCarData(lang),
         this.statesStore.fetchStates(lang),
         this.makesStore.fetchMakes(lang),
-        this.authStore.getAdvertiser(this.id, lang)
-      ])
-    }
+      ]
+
+      if (this.id) {
+        requests.push(this.authStore.getAdvertiser(this.id, lang))
+      }
+
+      try {
+        await Promise.all(requests)
+      } catch (error) {
+        console.error('Failed to load application data:', error)
+      }
+    },
   },
   watch: {
     '$i18n.locale'(newLang) {

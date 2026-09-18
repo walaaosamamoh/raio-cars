@@ -35,7 +35,7 @@ const router = createRouter({
       meta: {layout: 'auth'}
     },
     {
-      path: '/verifyOtp',
+      path: '/verifyOtp/:phone?',
       name: 'verifyOtp',
       component: () => import('../views/auth/VerifyOtp.vue'),
       meta: {layout: 'auth'}

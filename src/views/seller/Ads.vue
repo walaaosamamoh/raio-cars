@@ -363,7 +363,7 @@
           {{ $t('seller_ads.no_ads_description') }}
         </p>
         <router-link
-          to="/seller/create-ad"
+          to="/create-ad"
           class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
