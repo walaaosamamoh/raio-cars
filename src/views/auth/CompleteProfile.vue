@@ -144,6 +144,7 @@
 <script>
 import * as yup from 'yup'
 import { useAuthStore } from '@/stores/auth'
+import defaultImage from '@/assets/default/default-avatar.png'
 
 export default {
   name: 'CompleteProfileVueOptions',
@@ -154,7 +155,7 @@ export default {
       selectedFile: null,
       previewImage: null,
       imageError: '',
-      defaultImage: '/src/assets/default/default-avatar.png',
+      defaultImage: defaultImage,
       profileSchema: yup.object({
         name: yup
           .string()

@@ -5,7 +5,11 @@
       <div class="flex gap-2">
         <!-- Left Side: Logo -->
         <router-link :to="{ name: 'home' }" class="flex-shrink-0">
-          <img class="h-14 md:h-16 w-auto" :src="theme==='dark' ? '/src/assets/default/logo_dark.jpeg' : '/src/assets/default/logo.jpeg'" alt="Logo" />
+          <img
+            class="h-14 md:h-16 w-auto"
+            :src="theme === 'dark' ? logoDark : logo"
+            alt="Logo"
+          />
         </router-link>
 
         <!-- Center/Desktop-only items -->
@@ -190,6 +194,8 @@
 </template>
 
 <script>
+import logo from '@/assets/default/logo.jpeg'
+import logoDark from '@/assets/default/logo_dark.jpeg'
 import { mapState, mapActions } from 'pinia'
 import { useThemeStore } from '@/stores/theme'
 import { useStatesStore } from '@/stores/states'
@@ -202,6 +208,8 @@ export default {
     return {
       isMenuOpen: false,
       isProfileOpen: false,
+      logo,
+      logoDark,
     }
   },
 
