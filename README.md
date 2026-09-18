@@ -1,35 +1,68 @@
-# carTest
+# 🚗 Raio Cars
 
-This template should help get you started developing with Vue 3 in Vite.
+A responsive **car marketplace frontend** built with Vue.js. Users can browse and filter vehicles, view detailed listings, explore seller profiles, and manage advertisements.
 
-## Recommended IDE Setup
+### 🌐 Live Demo
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+**[Raio Cars](https://raio-cars.vercel.app/)**
 
-## Customize configuration
+## ✨ Features
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+* 🚘 Vehicle listings, search & filtering
+* 📄 Detailed vehicle pages & image galleries
+* 👤 Seller profiles & contact options
+* 📝 Create, edit & delete advertisements
+* 🖼️ Multiple image upload & featured image selection
+* 📊 Seller dashboard & advertisement statistics
+* 🌍 English & Arabic with RTL support
+* 🌓 Light & dark mode
+* 📱 Responsive design
 
-## Project Setup
+## 🛠️ Tech Stack
 
-```sh
-npm install
+* **Vue.js**
+* **Vite**
+* **Pinia**
+* **Vue Router**
+* **Tailwind CSS**
+* **Axios**
+* **Vue I18n**
+* **VeeValidate**
+* **Swiper**
+* **SweetAlert2**
+* **Vue Toastification**
+* **Font Awesome**
+* **Day.js**
+
+## 🔐 Demo Authentication
+
+You can explore the seller features using the demo account:
+
+```text
+Whatsapp number: 249912345678
 ```
 
-### Compile and Hot-Reload for Development
+> Demo account for portfolio demonstration purposes.
 
-```sh
+## 🏗️ Highlights
+
+* Component-based architecture
+* State management with Pinia
+* Reusable UI and form components
+* Dynamic Make → Model and State → City fields
+* English / Arabic localization with RTL support
+* Responsive layouts
+* Data-driven frontend architecture
+
+## 🚀 Run Locally
+
+```bash
+git clone https://github.com/walaaosamamoh/raio-cars.git
+cd raio-cars
+npm install
 npm run dev
 ```
 
-### Compile and Minify for Production
+## 👩‍💻 Author
 
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+**Walaa Osama** — Frontend Developer
