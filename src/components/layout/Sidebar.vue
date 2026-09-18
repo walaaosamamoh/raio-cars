@@ -24,7 +24,7 @@
     <!-- Logo Section -->
     <div class="p-5 border-b dark:border-gray-700 flex items-center justify-between">
       <div class="overflow-hidden flex-1 flex justify-center items-center" v-if="!isCollapsed">
-        <img :src="theme==='dark' ? '/images/logo_dark.jpeg' : '/images/logo.jpeg'" alt="Logo" class="w-18 h-14 object-contain" />
+        <img :src="theme==='dark' ? logoDark : logo" alt="Logo" class="w-18 h-14 object-contain" />
       </div>
 
       <!-- Collapse Button -->
@@ -99,6 +99,9 @@
 <script>
 import { mapState } from 'pinia'
 import { useThemeStore } from '@/stores/theme'
+import logo from '@/assets/default/logo.jpeg'
+import logoDark from '@/assets/default/logo_dark.jpeg'
+
 export default {
   name: 'SellerSidebar',
   props: {
@@ -109,6 +112,8 @@ export default {
   },
   data() {
     return {
+      logo,
+      logoDark,
       isCollapsed: false,
       navItems: [
         {
