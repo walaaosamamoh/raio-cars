@@ -24,7 +24,7 @@ import toyota from '@/assets/cars/toyota-camry-2019.jpg'
 import landCruiser from '@/assets/cars/toyota-land-cruiser-gxr2016.jpg'
 import landCruiser2 from '@/assets/cars/landcruiser.jpg'
 
-import toyotacamry from '@/assets/cars/toyota-camry-se-2017.jpg'
+import toyotacamry from '@/assets/cars/Toyota-camry-se-2017.jpg'
 import toyotacamry2 from '@/assets/cars/toyota-camry.jpg'
 
 import nissanSentra from '@/assets/cars/nissan-sentra-sl.jpg'
